@@ -1,12 +1,12 @@
-import './App.css'
+import Navbar from "./Navbar.tsx";
+import Hero from "./Hero.tsx";
+import "./App.css";
 
-function App() {
+export default function App() {
   return (
-    <>
-      <h1>Welcome to my personal site!</h1>
-      <h2>WIP</h2>
-    </>
-  )
+    <div className="app">
+      <Navbar />
+      <Hero />
+    </div>
+  );
 }
-
-export default App
