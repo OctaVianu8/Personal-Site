@@ -1,10 +1,10 @@
-import Navbar from "./Navbar.tsx";
-import Hero from "./Hero.tsx";
-import "./App.css";
+import Navbar from "./Navbar";
+import Hero from "./Hero";
+import styles from "./App.module.css";
 
 export default function App() {
   return (
-    <div className="app">
+    <div className={styles.app}>
       <Navbar />
       <Hero />
     </div>

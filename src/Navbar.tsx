@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import "./Navbar.css";
+import styles from "./Navbar.module.css";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -11,16 +11,12 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className={`navbar${scrolled ? " scrolled" : ""}`}>
-      <span className="navbar__logo">OS</span>
+    <nav className={scrolled ? `${styles.navbar} ${styles.scrolled}` : styles.navbar}>
+      <span className={styles.logo}>OS</span>
 
-      <div className="navbar__links">
+      <div className={styles.links}>
         {["About", "Projects", "CP"].map((item) => (
-          <a
-            key={item}
-            href={`#${item.toLowerCase()}`}
-            className="navbar__link"
-          >
+          <a key={item} href={`#${item.toLowerCase()}`} className={styles.link}>
             {item}
           </a>
         ))}
@@ -28,7 +24,7 @@ export default function Navbar() {
           href="/CV.pdf"
           target="_blank"
           rel="noopener noreferrer"
-          className="navbar__cv"
+          className={styles.cv}
         >
           CV
         </a>

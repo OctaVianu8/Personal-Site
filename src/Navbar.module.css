@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap');
-
 .navbar {
   position: fixed;
   top: 0;
@@ -15,28 +13,28 @@
   border-bottom: none;
 }
 
-.navbar.scrolled {
+.scrolled {
   background: rgba(5, 5, 8, 0.85);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.navbar__logo {
-  font-family: 'Space Mono', monospace;
+.logo {
+  font-family: var(--font-mono);
   font-size: 0.85rem;
   letter-spacing: 0.12em;
-  color: #3b82f6;
+  color: var(--color-accent);
   text-transform: uppercase;
 }
 
-.navbar__links {
+.links {
   display: flex;
   gap: 2rem;
   align-items: center;
 }
 
-.navbar__link {
-  font-family: 'Space Mono', monospace;
+.link {
+  font-family: var(--font-mono);
   font-size: 0.75rem;
   letter-spacing: 0.1em;
   color: rgba(255, 255, 255, 0.55);
@@ -45,15 +43,15 @@
   transition: color 0.2s;
 }
 
-.navbar__link:hover {
+.link:hover {
   color: #fff;
 }
 
-.navbar__cv {
-  font-family: 'Space Mono', monospace;
+.cv {
+  font-family: var(--font-mono);
   font-size: 0.75rem;
   letter-spacing: 0.1em;
-  color: #3b82f6;
+  color: var(--color-accent);
   text-decoration: none;
   text-transform: uppercase;
   border: 1px solid rgba(59, 130, 246, 0.4);
@@ -62,7 +60,7 @@
   transition: background 0.2s, border-color 0.2s;
 }
 
-.navbar__cv:hover {
+.cv:hover {
   background: rgba(59, 130, 246, 0.12);
   border-color: rgba(59, 130, 246, 0.8);
 }

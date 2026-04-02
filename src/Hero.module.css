@@ -15,18 +15,10 @@
   display: flex;
   align-items: center;
   overflow: hidden;
-  background: #050508;
+  background: var(--color-bg);
 }
 
-.hero__canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0.6;
-}
-
-.hero__glow {
+.glow {
   position: absolute;
   top: 20%;
   right: -5%;
@@ -37,26 +29,26 @@
   pointer-events: none;
 }
 
-.hero__content {
+.content {
   position: relative;
   z-index: 1;
   padding: 0 2.5rem;
   max-width: 900px;
 }
 
-.hero__greeting {
-  font-family: 'Space Mono', monospace;
+.greeting {
+  font-family: var(--font-mono);
   font-size: 0.75rem;
   letter-spacing: 0.2em;
-  color: #3b82f6;
+  color: var(--color-accent);
   text-transform: uppercase;
   margin-bottom: 1.5rem;
   opacity: 0;
   animation: fadeUp 0.6s ease 0.2s forwards;
 }
 
-.hero__title {
-  font-family: 'Bebas Neue', sans-serif;
+.title {
+  font-family: var(--font-display);
   font-size: clamp(4rem, 12vw, 9rem);
   line-height: 0.9;
   color: #fff;
@@ -65,12 +57,12 @@
   animation: fadeUp 0.7s ease 0.35s forwards;
 }
 
-.hero__title-accent {
-  color: #3b82f6;
+.titleAccent {
+  color: var(--color-accent);
 }
 
-.hero__subtitle {
-  font-family: 'Space Mono', monospace;
+.subtitle {
+  font-family: var(--font-mono);
   font-size: clamp(0.75rem, 1.5vw, 0.9rem);
   color: rgba(255, 255, 255, 0.45);
   letter-spacing: 0.08em;
@@ -79,7 +71,7 @@
   animation: fadeUp 0.7s ease 0.5s forwards;
 }
 
-.hero__actions {
+.actions {
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
@@ -87,25 +79,25 @@
   animation: fadeUp 0.7s ease 0.65s forwards;
 }
 
-.hero__btn-primary {
-  font-family: 'Space Mono', monospace;
+.btnPrimary {
+  font-family: var(--font-mono);
   font-size: 0.75rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   text-decoration: none;
-  color: #050508;
-  background: #3b82f6;
+  color: var(--color-bg);
+  background: var(--color-accent);
   padding: 0.75rem 1.75rem;
   border-radius: 2px;
   transition: opacity 0.2s;
 }
 
-.hero__btn-primary:hover {
+.btnPrimary:hover {
   opacity: 0.85;
 }
 
-.hero__btn-secondary {
-  font-family: 'Space Mono', monospace;
+.btnSecondary {
+  font-family: var(--font-mono);
   font-size: 0.75rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -117,12 +109,12 @@
   transition: border-color 0.2s, color 0.2s;
 }
 
-.hero__btn-secondary:hover {
+.btnSecondary:hover {
   border-color: rgba(255, 255, 255, 0.4);
   color: #fff;
 }
 
-.hero__stats {
+.stats {
   margin-top: 5rem;
   display: flex;
   gap: 3rem;
@@ -130,16 +122,16 @@
   animation: fadeUp 0.7s ease 0.8s forwards;
 }
 
-.hero__stat-value {
-  font-family: 'Bebas Neue', sans-serif;
+.statValue {
+  font-family: var(--font-display);
   font-size: 1.5rem;
   color: #fff;
   margin: 0;
   line-height: 1;
 }
 
-.hero__stat-label {
-  font-family: 'Space Mono', monospace;
+.statLabel {
+  font-family: var(--font-mono);
   font-size: 0.65rem;
   color: rgba(255, 255, 255, 0.35);
   letter-spacing: 0.12em;
