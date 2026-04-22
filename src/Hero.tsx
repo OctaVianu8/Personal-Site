@@ -4,6 +4,7 @@ const STATS = [
   { value: "Gold", label: "ONI 2024" },
   { value: "CEOI", label: "Problem Setter" },
   { value: "Citadel", label: "Discover" },
+  { value: "AMIQ Eda", label: "Software Engineering Intern" },
 ] as const;
 
 function HeroTitle() {

@@ -15,9 +15,13 @@ export default function Navbar() {
       <span className={styles.logo}>OS</span>
 
       <div className={styles.links}>
-        {["About", "Projects", "CP"].map((item) => (
-          <a key={item} href={`#${item.toLowerCase()}`} className={styles.link}>
-            {item}
+        {([
+          { label: "About", href: "#about" },
+          { label: "Projects", href: "#projects" },
+          { label: "Competitive Programming", href: "#competitive-programming" },
+        ] as const).map(({ label, href }) => (
+          <a key={label} href={href} className={styles.link}>
+            {label}
           </a>
         ))}
         <a
