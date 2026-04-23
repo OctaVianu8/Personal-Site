@@ -9,9 +9,9 @@ const PROJECTS = [
     stealth: false,
   },
   {
-    name: "Router",
+    name: "HTTP Server",
     lang: "(C)",
-    desc: "IPv4 router with LPM forwarding, TTL management, ICMP generation, and checksum validation.",
+    desc: "Low-level HTTP server in C over raw TCP sockets, using epoll-based I/O multiplexing and non-blocking sockets to handle thousands of concurrent connections.",
     tags: ["C", "Networking", "Systems"],
     stealth: false,
   },
