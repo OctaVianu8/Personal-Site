@@ -1,0 +1,44 @@
+.section {
+  background: var(--color-bg);
+}
+
+.content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 7rem 2.5rem 6rem;
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.content.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 4vw, 3rem);
+  color: #fff;
+  letter-spacing: 0.06em;
+  margin-bottom: 2.5rem;
+}
+
+.textBlock {
+  border-left: 2px solid var(--color-accent);
+  padding-left: 2rem;
+  margin-bottom: 4rem;
+}
+
+.body {
+  font-family: var(--font-mono);
+  font-size: clamp(0.78rem, 1.3vw, 0.88rem);
+  line-height: 2;
+  color: rgba(255, 255, 255, 0.72);
+  letter-spacing: 0.015em;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}

@@ -1,29 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-
-const BG = "#050508";
-const BLUE = "#3b82f6";
-const FONT_DISPLAY = "'Bebas Neue', sans-serif";
-const FONT_MONO = "'Space Mono', monospace";
-
-function useFadeIn() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVisible(true); }, { threshold: 0.15 });
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-  return {
-    ref,
-    fadeStyle: {
-      opacity: visible ? 1 : 0,
-      transform: visible ? "translateY(0)" : "translateY(22px)",
-      transition: "opacity 0.7s ease, transform 0.7s ease",
-    },
-  };
-}
+import { useFadeIn } from "./useFadeIn";
+import styles from "./Contact.module.css";
 
 const EmailIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -49,125 +25,38 @@ const GitHubIcon = () => (
 );
 
 const LINKS = [
-  {
-    label: "Email",
-    href: "mailto:stanescu.matei.octavian@gmail.com",
-    Icon: EmailIcon,
-  },
-  {
-    label: "LinkedIn",
-    href: "https://www.linkedin.com/in/octavianu/",
-    Icon: LinkedInIcon,
-  },
-  {
-    label: "GitHub",
-    href: "https://github.com/OctaVianu8",
-    Icon: GitHubIcon,
-  },
+  { label: "Email", href: "mailto:stanescu.matei.octavian@gmail.com", Icon: EmailIcon },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/octavianu/", Icon: LinkedInIcon },
+  { label: "GitHub", href: "https://github.com/OctaVianu8", Icon: GitHubIcon },
 ] as const;
 
 export default function Contact() {
-  const { ref, fadeStyle } = useFadeIn();
-  const [hovered, setHovered] = useState<number | null>(null);
+  const { ref, visible } = useFadeIn(0.15);
 
   return (
-    <section id="contact" style={{ background: BG }}>
-      <div
-        ref={ref}
-        style={{
-          maxWidth: "700px",
-          margin: "0 auto",
-          padding: "6rem 2.5rem 5rem",
-          textAlign: "center",
-          ...fadeStyle,
-        }}
-      >
-        <h2
-          style={{
-            fontFamily: FONT_DISPLAY,
-            fontSize: "clamp(2.2rem, 4vw, 3rem)",
-            color: "#fff",
-            letterSpacing: "0.06em",
-            marginBottom: "0.75rem",
-          }}
-        >
-          CONTACT
-        </h2>
+    <section id="contact" className={styles.section}>
+      <div ref={ref} className={`${styles.content}${visible ? ` ${styles.visible}` : ""}`}>
+        <h2 className={styles.heading}>CONTACT</h2>
+        <p className={styles.subheading}>get in touch</p>
 
-        <p
-          style={{
-            fontFamily: FONT_MONO,
-            fontSize: "0.75rem",
-            color: "rgba(255,255,255,0.35)",
-            letterSpacing: "0.06em",
-            marginBottom: "3.5rem",
-          }}
-        >
-          get in touch
-        </p>
-
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            gap: "3rem",
-            flexWrap: "wrap",
-            marginBottom: "5rem",
-          }}
-        >
-          {LINKS.map(({ label, href, Icon }, i) => {
-            const isHovered = hovered === i;
-            return (
-              <a
-                key={label}
-                href={href}
-                target={href.startsWith("mailto") ? undefined : "_blank"}
-                rel={href.startsWith("mailto") ? undefined : "noopener noreferrer"}
-                onMouseEnter={() => setHovered(i)}
-                onMouseLeave={() => setHovered(null)}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: "0.6rem",
-                  color: isHovered ? BLUE : "rgba(255,255,255,0.5)",
-                  textDecoration: "none",
-                  transition: "color 0.2s ease",
-                }}
-              >
-                <Icon />
-                <span
-                  style={{
-                    fontFamily: FONT_MONO,
-                    fontSize: "0.68rem",
-                    letterSpacing: "0.1em",
-                    textTransform: "uppercase",
-                  }}
-                >
-                  {label}
-                </span>
-              </a>
-            );
-          })}
+        <div className={styles.links}>
+          {LINKS.map(({ label, href, Icon }) => (
+            <a
+              key={label}
+              href={href}
+              target={href.startsWith("mailto") ? undefined : "_blank"}
+              rel={href.startsWith("mailto") ? undefined : "noopener noreferrer"}
+              className={styles.link}
+            >
+              <Icon />
+              <span className={styles.linkLabel}>{label}</span>
+            </a>
+          ))}
         </div>
 
-        <hr
-          style={{
-            border: "none",
-            borderTop: "1px solid rgba(255,255,255,0.06)",
-            marginBottom: "1.75rem",
-          }}
-        />
+        <hr className={styles.divider} />
 
-        <p
-          style={{
-            fontFamily: FONT_MONO,
-            fontSize: "0.65rem",
-            color: "rgba(255,255,255,0.22)",
-            letterSpacing: "0.06em",
-            lineHeight: "1.8",
-          }}
-        >
+        <p className={styles.footer}>
           © 2025 Octavian Stănescu — Built with React + Vite, deployed on Cloudflare Pages
         </p>
       </div>

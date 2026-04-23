@@ -5,10 +5,11 @@ import Experience from "./Experience";
 import Projects from "./Projects";
 import CompetitiveProgramming from "./CompetitiveProgramming";
 import Contact from "./Contact";
+import styles from "./App.module.css";
 
 export default function App() {
   return (
-    <div style={{ background: "#050508", minHeight: "100vh" }}>
+    <div className={styles.app}>
       <Navbar />
       <Hero />
       <About />
