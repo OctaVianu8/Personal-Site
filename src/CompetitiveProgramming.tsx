@@ -65,7 +65,7 @@ export default function CompetitiveProgramming() {
               ))}
               <div className={styles.terminalMidRule} />
               <a
-                href="https://codeforces.com"
+                href="https://codeforces.com/profile/Stanescu_Octav"
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.profileLink}
