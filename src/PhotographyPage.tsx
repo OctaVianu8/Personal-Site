@@ -268,9 +268,6 @@ function AlbumList({ onSelect }: { onSelect: (slug: string) => void }) {
           PHOTOGRAPHY
         </h1>
         <div style={{ width: "3.5rem", height: "2px", background: BLUE, marginBottom: "1.25rem" }} />
-        <p style={{ fontFamily: FONT_MONO, fontSize: "0.75rem", color: "rgba(255,255,255,0.38)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "3rem" }}>
-          Street · Architecture · Light
-        </p>
 
         {error && <p style={{ color: "#ef4444", fontFamily: FONT_MONO, fontSize: "0.72rem" }}>{error}</p>}
         {loading && <p style={{ color: "rgba(255,255,255,0.3)", fontFamily: FONT_MONO, fontSize: "0.72rem", letterSpacing: "0.08em" }}>Loading...</p>}
