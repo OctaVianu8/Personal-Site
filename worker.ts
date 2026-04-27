@@ -55,7 +55,23 @@ async function handleApi(
          FROM albums a LEFT JOIN photos p ON p.album_id = a.id
          GROUP BY a.id ORDER BY a.created_at DESC`
       ).all();
-      return Response.json(r.results, { headers: CORS });
+      const albums = r.results as any[];
+      if (albums.length > 0) {
+        const previews = await env.DB.prepare(
+          `SELECT album_id, filename FROM (
+             SELECT album_id, filename,
+               ROW_NUMBER() OVER (PARTITION BY album_id ORDER BY display_order ASC) AS rn
+             FROM photos
+           ) WHERE rn <= 5`
+        ).all();
+        const map: Record<number, string[]> = {};
+        for (const row of previews.results as any[]) {
+          if (!map[row.album_id]) map[row.album_id] = [];
+          map[row.album_id].push(row.filename);
+        }
+        for (const album of albums) album.preview_photos = map[album.id] ?? [];
+      }
+      return Response.json(albums, { headers: CORS });
     }
     if (method === "POST") {
       const { name, slug } = await request.json() as { name: string; slug: string };

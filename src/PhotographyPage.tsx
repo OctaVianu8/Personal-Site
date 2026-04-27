@@ -11,6 +11,7 @@ interface Album {
   name: string;
   slug: string;
   photo_count: number;
+  preview_photos: string[];
 }
 
 interface Photo {
@@ -167,6 +168,84 @@ function Lightbox({
   );
 }
 
+function AlbumCard({ album, onClick }: { album: Album; onClick: () => void }) {
+  const [idx, setIdx] = useState(0);
+  const photos = album.preview_photos ?? [];
+
+  useEffect(() => {
+    if (photos.length <= 1) return;
+    const id = setInterval(() => setIdx(i => (i + 1) % photos.length), 3000);
+    return () => clearInterval(id);
+  }, [photos.length]);
+
+  return (
+    <div className="album-card" onClick={onClick}>
+      <div style={{ position: "relative", aspectRatio: "4/3", overflow: "hidden", background: "#0a0a0e" }}>
+        {photos.length === 0 ? (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
+            <span style={{ fontFamily: FONT_DISPLAY, fontSize: "3rem", color: "rgba(255,255,255,0.06)", letterSpacing: "0.05em" }}>
+              {album.name.charAt(0).toUpperCase()}
+            </span>
+          </div>
+        ) : (
+          photos.map((filename, i) => (
+            <img
+              key={filename}
+              src={`/api/photos/album-${album.id}/${filename}`}
+              alt=""
+              style={{
+                position: "absolute",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                opacity: i === idx ? 1 : 0,
+                transition: "opacity 0.8s ease",
+              }}
+            />
+          ))
+        )}
+        <div style={{
+          position: "absolute",
+          inset: 0,
+          background: "linear-gradient(to top, rgba(5,5,8,0.7) 0%, transparent 50%)",
+          pointerEvents: "none",
+        }} />
+        {photos.length > 1 && (
+          <div style={{
+            position: "absolute",
+            bottom: "0.6rem",
+            right: "0.75rem",
+            display: "flex",
+            gap: "4px",
+          }}>
+            {photos.map((_, i) => (
+              <div
+                key={i}
+                style={{
+                  width: i === idx ? "1.2rem" : "4px",
+                  height: "3px",
+                  borderRadius: "2px",
+                  background: i === idx ? BLUE : "rgba(255,255,255,0.35)",
+                  transition: "width 0.3s ease, background 0.3s ease",
+                }}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+      <div style={{ padding: "0.9rem 1.1rem 1.1rem" }}>
+        <div style={{ fontFamily: FONT_DISPLAY, fontSize: "1.4rem", color: "#fff", letterSpacing: "0.04em", marginBottom: "0.25rem" }}>
+          {album.name.toUpperCase()}
+        </div>
+        <div style={{ fontFamily: FONT_MONO, fontSize: "0.6rem", color: "rgba(255,255,255,0.35)", letterSpacing: "0.1em" }}>
+          {album.photo_count} photos
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function AlbumList({ onSelect }: { onSelect: (slug: string) => void }) {
   const [albums, setAlbums] = useState<Album[]>([]);
   const [error, setError] = useState("");
@@ -198,21 +277,7 @@ function AlbumList({ onSelect }: { onSelect: (slug: string) => void }) {
 
         <div className="albums-grid">
           {albums.map(album => (
-            <div key={album.id} className="album-card" onClick={() => onSelect(album.slug)}>
-              <div style={{ background: "rgba(59,130,246,0.06)", aspectRatio: "16/9", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <span style={{ fontFamily: FONT_DISPLAY, fontSize: "3rem", color: "rgba(255,255,255,0.08)", letterSpacing: "0.05em" }}>
-                  {album.name.charAt(0).toUpperCase()}
-                </span>
-              </div>
-              <div style={{ padding: "1rem 1.25rem 1.25rem" }}>
-                <div style={{ fontFamily: FONT_DISPLAY, fontSize: "1.5rem", color: "#fff", letterSpacing: "0.04em", marginBottom: "0.3rem" }}>
-                  {album.name.toUpperCase()}
-                </div>
-                <div style={{ fontFamily: FONT_MONO, fontSize: "0.62rem", color: "rgba(255,255,255,0.35)", letterSpacing: "0.1em" }}>
-                  {album.photo_count} photos
-                </div>
-              </div>
-            </div>
+            <AlbumCard key={album.id} album={album} onClick={() => onSelect(album.slug)} />
           ))}
         </div>
       </div>
