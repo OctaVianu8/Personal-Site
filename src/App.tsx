@@ -1,22 +1,17 @@
-import Navbar from "./Navbar";
-import Hero from "./Hero";
-import About from "./About";
-import Experience from "./Experience";
-import Projects from "./Projects";
-import CompetitiveProgramming from "./CompetitiveProgramming";
-import Contact from "./Contact";
-import styles from "./App.module.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import HomePage from "./HomePage";
+import PhotographyPage from "./PhotographyPage";
+import AdminPage from "./AdminPage";
 
 export default function App() {
   return (
-    <div className={styles.app}>
-      <Navbar />
-      <Hero />
-      <About />
-      <Experience />
-      <Projects />
-      <CompetitiveProgramming />
-      <Contact />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/photography" element={<PhotographyPage />} />
+        <Route path="/photography/:slug" element={<PhotographyPage />} />
+        <Route path="/admin" element={<AdminPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }

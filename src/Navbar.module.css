@@ -47,6 +47,14 @@
   color: #fff;
 }
 
+.linkActive {
+  color: var(--color-accent);
+}
+
+.linkActive:hover {
+  color: var(--color-accent);
+}
+
 .cv {
   font-family: var(--font-mono);
   font-size: 0.75rem;

@@ -1,0 +1,11 @@
+name = "personal-site"
+compatibility_date = "2024-01-01"
+
+[[r2_buckets]]
+binding = "PHOTO_BUCKET"
+bucket_name = "photography"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "photography-db"
+database_id = "70709ae7-1430-4d70-8d38-1841b2210039"
