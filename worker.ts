@@ -1,19 +1,17 @@
-import { onRequestGet as albumsGet, onRequestPost as albumsPost } from "./functions/api/albums";
-import { onRequestGet as albumSlugGet, onRequestDelete as albumSlugDelete } from "./functions/api/albums/[slug]";
-import { onRequestPost as photosUpload } from "./functions/api/photos/upload";
-import { onRequestDelete as photoDelete } from "./functions/api/photos/[id]";
-import { onRequestPatch as photoOrder } from "./functions/api/photos/[id]/order";
-import { onRequestGet as photoBinary } from "./functions/api/photos/[[path]]";
-import { CORS, Env, Ctx } from "./functions/api/_helpers";
+const CORS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, DELETE, PATCH, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+};
 
-type WorkerEnv = Env & { ASSETS: Fetcher };
-
-function ctx(request: Request, env: Env, params: Record<string, string | string[]> = {}): Ctx {
-  return { request, env, params, next: async () => new Response("Not found", { status: 404 }) };
+interface Env {
+  DB: any;
+  PHOTO_BUCKET: any;
+  ASSETS: any;
 }
 
 export default {
-  async fetch(request: Request, env: WorkerEnv): Promise<Response> {
+  async fetch(request: Request, env: Env): Promise<Response> {
     const { pathname } = new URL(request.url);
     const method = request.method.toUpperCase();
 
@@ -21,36 +19,122 @@ export default {
       return new Response(null, { status: 204, headers: CORS });
     }
 
-    if (pathname === "/api/albums") {
-      if (method === "GET") return albumsGet(ctx(request, env));
-      if (method === "POST") return albumsPost(ctx(request, env));
-    }
-
-    const mAlbum = pathname.match(/^\/api\/albums\/([^/]+)$/);
-    if (mAlbum) {
-      if (method === "GET") return albumSlugGet(ctx(request, env, { slug: mAlbum[1] }));
-      if (method === "DELETE") return albumSlugDelete(ctx(request, env, { slug: mAlbum[1] }));
-    }
-
-    if (pathname === "/api/photos/upload" && method === "POST") {
-      return photosUpload(ctx(request, env));
-    }
-
-    const mOrder = pathname.match(/^\/api\/photos\/(\d+)\/order$/);
-    if (mOrder && method === "PATCH") {
-      return photoOrder(ctx(request, env, { id: mOrder[1] }));
-    }
-
-    const mPhoto = pathname.match(/^\/api\/photos\/(\d+)$/);
-    if (mPhoto && method === "DELETE") {
-      return photoDelete(ctx(request, env, { id: mPhoto[1] }));
-    }
-
-    if (pathname.startsWith("/api/photos/") && method === "GET") {
-      const path = pathname.slice("/api/photos/".length).split("/");
-      return photoBinary(ctx(request, env, { path }));
+    if (pathname.startsWith("/api/")) {
+      try {
+        return await handleApi(request, env, pathname, method);
+      } catch (err) {
+        return Response.json({ error: String(err) }, { status: 500, headers: CORS });
+      }
     }
 
     return env.ASSETS.fetch(request);
   },
 };
+
+async function handleApi(
+  request: Request,
+  env: Env,
+  pathname: string,
+  method: string
+): Promise<Response> {
+
+  // GET /api/albums  POST /api/albums
+  if (pathname === "/api/albums") {
+    if (method === "GET") {
+      const r = await env.DB.prepare(
+        `SELECT a.id, a.name, a.slug, COUNT(p.id) AS photo_count
+         FROM albums a LEFT JOIN photos p ON p.album_id = a.id
+         GROUP BY a.id ORDER BY a.created_at DESC`
+      ).all();
+      return Response.json(r.results, { headers: CORS });
+    }
+    if (method === "POST") {
+      const { name, slug } = await request.json() as { name: string; slug: string };
+      const album = await env.DB.prepare(
+        `INSERT INTO albums (name, slug, created_at) VALUES (?, ?, datetime('now')) RETURNING *`
+      ).bind(name, slug).first();
+      return Response.json(album, { status: 201, headers: CORS });
+    }
+  }
+
+  // GET /api/albums/:slug   DELETE /api/albums/:id
+  const mAlbum = pathname.match(/^\/api\/albums\/([^/]+)$/);
+  if (mAlbum) {
+    const param = mAlbum[1];
+    if (method === "GET") {
+      const album = await env.DB.prepare(
+        `SELECT * FROM albums WHERE slug = ?`
+      ).bind(param).first();
+      if (!album) return Response.json({ error: "Not found" }, { status: 404, headers: CORS });
+      const photos = await env.DB.prepare(
+        `SELECT id, filename, display_order FROM photos WHERE album_id = ? ORDER BY display_order ASC`
+      ).bind(album.id).all();
+      return Response.json({ ...album, photos: photos.results }, { headers: CORS });
+    }
+    if (method === "DELETE") {
+      const listed = await env.PHOTO_BUCKET.list({ prefix: `album-${param}/` });
+      if (listed.objects.length > 0) {
+        await env.PHOTO_BUCKET.delete(listed.objects.map((o: any) => o.key));
+      }
+      await env.DB.prepare(`DELETE FROM photos WHERE album_id = ?`).bind(param).run();
+      await env.DB.prepare(`DELETE FROM albums WHERE id = ?`).bind(param).run();
+      return Response.json({ ok: true }, { headers: CORS });
+    }
+  }
+
+  // POST /api/photos/upload
+  if (pathname === "/api/photos/upload" && method === "POST") {
+    const form = await request.formData();
+    const albumId = form.get("album_id") as string;
+    const filename = form.get("filename") as string;
+    const file = form.get("file") as File;
+    await env.PHOTO_BUCKET.put(`album-${albumId}/${filename}`, await file.arrayBuffer(), {
+      httpMetadata: { contentType: file.type || "image/jpeg" },
+    });
+    const maxRow = await env.DB.prepare(
+      `SELECT COALESCE(MAX(display_order), 0) AS max_order FROM photos WHERE album_id = ?`
+    ).bind(albumId).first();
+    const nextOrder = (maxRow?.max_order ?? 0) + 1;
+    const photo = await env.DB.prepare(
+      `INSERT INTO photos (album_id, filename, display_order, created_at) VALUES (?, ?, ?, datetime('now')) RETURNING *`
+    ).bind(albumId, filename, nextOrder).first();
+    return Response.json(photo, { status: 201, headers: CORS });
+  }
+
+  // PATCH /api/photos/:id/order
+  const mOrder = pathname.match(/^\/api\/photos\/(\d+)\/order$/);
+  if (mOrder && method === "PATCH") {
+    const { display_order } = await request.json() as { display_order: number };
+    await env.DB.prepare(`UPDATE photos SET display_order = ? WHERE id = ?`)
+      .bind(display_order, mOrder[1]).run();
+    return Response.json({ ok: true }, { headers: CORS });
+  }
+
+  // DELETE /api/photos/:id
+  const mPhoto = pathname.match(/^\/api\/photos\/(\d+)$/);
+  if (mPhoto && method === "DELETE") {
+    const photo = await env.DB.prepare(
+      `SELECT album_id, filename FROM photos WHERE id = ?`
+    ).bind(mPhoto[1]).first() as { album_id: number; filename: string } | null;
+    if (!photo) return Response.json({ error: "Not found" }, { status: 404, headers: CORS });
+    await env.PHOTO_BUCKET.delete(`album-${photo.album_id}/${photo.filename}`);
+    await env.DB.prepare(`DELETE FROM photos WHERE id = ?`).bind(mPhoto[1]).run();
+    return Response.json({ ok: true }, { headers: CORS });
+  }
+
+  // GET /api/photos/**  (serve image binary from R2)
+  if (pathname.startsWith("/api/photos/") && method === "GET") {
+    const key = decodeURIComponent(pathname.slice("/api/photos/".length));
+    const object = await env.PHOTO_BUCKET.get(key);
+    if (!object) return new Response("Not found", { status: 404 });
+    return new Response(object.body, {
+      headers: {
+        "Content-Type": object.httpMetadata?.contentType ?? "image/jpeg",
+        "Cache-Control": "public, max-age=31536000",
+        ...CORS,
+      },
+    });
+  }
+
+  return Response.json({ error: "Not found" }, { status: 404, headers: CORS });
+}
