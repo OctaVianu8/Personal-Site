@@ -27,7 +27,16 @@ export default {
       }
     }
 
-    return env.ASSETS.fetch(request);
+    // Serve static assets; fall back to index.html for SPA routes
+    try {
+      const asset = await env.ASSETS.fetch(request);
+      if (asset.status === 404) {
+        return env.ASSETS.fetch(new Request(new URL("/index.html", request.url).toString()));
+      }
+      return asset;
+    } catch (err) {
+      return new Response(String(err), { status: 500 });
+    }
   },
 };
 
