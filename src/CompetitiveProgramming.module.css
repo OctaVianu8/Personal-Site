@@ -24,34 +24,99 @@
   margin-bottom: 3rem;
 }
 
-.columns {
-  display: flex;
-  gap: 2.5rem;
-  align-items: flex-start;
-  flex-wrap: wrap;
+.featured {
+  background: #06060e;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 4px;
+  padding: 2.25rem 2rem;
   margin-bottom: 3rem;
+  text-align: center;
+  transition: background 0.2s ease, border-color 0.2s ease;
 }
 
-.leftCol {
-  flex: 1;
-  min-width: 260px;
+.featured:hover {
+  background: #08081a;
+  border-color: rgba(59, 130, 246, 0.45);
+}
+
+.featuredEmoji {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.featuredTop {
+  margin-bottom: 1.5rem;
+}
+
+.featuredEvent {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  color: #fff;
+  letter-spacing: 0.05em;
+  margin: 0 0 0.5rem 0;
+  line-height: 1;
+}
+
+.featuredResult {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: var(--color-accent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.featuredDesc {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.06em;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.scrollContainer {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  gap: 1.25rem;
+  overflow-x: auto;
+  margin-bottom: 5rem;
+  padding-bottom: 1.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(59, 130, 246, 0.3) transparent;
+  scroll-snap-type: x mandatory;
 }
 
-.rightCol {
-  flex: 1;
-  min-width: 260px;
+.scrollContainer::-webkit-scrollbar {
+  height: 6px;
+}
+
+.scrollContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollContainer::-webkit-scrollbar-thumb {
+  background-color: rgba(59, 130, 246, 0.3);
+  border-radius: 10px;
+}
+
+.terminalContainer {
+  max-width: 700px;
+  margin: 0 auto;
 }
 
 .achievementCard {
   background: #06060e;
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 4px;
-  padding: 1.5rem 1.75rem;
+  padding: 1.25rem;
   transition: background 0.2s ease, border-color 0.2s ease;
   cursor: default;
+  flex: 0 0 calc(25% - 0.9375rem);
+  min-width: 215px;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
 }
 
 .achievementCard:hover {
@@ -61,19 +126,26 @@
 
 .achievementHeader {
   display: flex;
-  align-items: baseline;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.achievementTitleWrapper {
+  display: flex;
+  align-items: center;
   gap: 0.75rem;
-  margin-bottom: 0.4rem;
 }
 
 .achievementEmoji {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   line-height: 1;
 }
 
 .achievementEvent {
   font-family: var(--font-display);
-  font-size: clamp(1.15rem, 2.2vw, 1.4rem);
+  font-size: 1.15rem;
   color: #fff;
   letter-spacing: 0.05em;
   line-height: 1;
@@ -81,10 +153,11 @@
 
 .achievementResult {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   color: var(--color-accent);
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  line-height: 1.4;
 }
 
 .achievementDesc {
@@ -92,7 +165,8 @@
   font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.38);
   letter-spacing: 0.06em;
-  padding-left: 1.85rem;
+  line-height: 1.6;
+  margin-top: auto;
 }
 
 .terminal {
@@ -178,4 +252,20 @@
   line-height: 1.7;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   padding-top: 2rem;
+}
+
+@media (max-width: 768px) {
+  .content {
+    padding: 5rem 1.5rem;
+  }
+  .featured {
+    padding: 1.5rem;
+  }
+  .achievementCard {
+    flex: 0 0 80%;
+  }
+  .terminalRow {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import Navbar from "./Navbar";
+import Navbar from "./navbar/Navbar";
 
 const BLUE = "#3b82f6";
 const FONT_DISPLAY = "'Bebas Neue', sans-serif";
