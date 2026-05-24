@@ -1,0 +1,19 @@
+.easterEgg {
+  background: transparent;
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--color-text);
+  opacity: 0.15;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: opacity 0.3s ease, color 0.3s ease;
+  margin-bottom: 0.5rem;
+  text-transform: lowercase;
+}
+
+.easterEgg:hover, .easterEgg:focus {
+  opacity: 0.8;
+  color: var(--color-accent);
+  outline: none;
+}

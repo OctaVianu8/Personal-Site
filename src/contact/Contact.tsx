@@ -1,5 +1,6 @@
 import { useFadeIn } from "../useFadeIn";
 import styles from "./Contact.module.css";
+import ThemeSwitcher from "../components/ThemeSwitcher";
 
 const EmailIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -56,10 +57,12 @@ export default function Contact() {
 
         <hr className={styles.divider} />
 
+        <ThemeSwitcher />
         <p className={styles.footer}>
           © 2025 Octavian Stănescu — Built with React + Vite, deployed on Cloudflare Pages
         </p>
       </div>
+      
     </section>
   );
 }
