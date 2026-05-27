@@ -1,0 +1,364 @@
+/* ── Section wrapper ── */
+.section {
+  background: var(--color-bg);
+}
+
+.content {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 2.5rem 6rem;
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.content.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Header ── */
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 4vw, 3rem);
+  color: #fff;
+  letter-spacing: 0.06em;
+}
+
+.totalCount {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.04em;
+}
+
+/* ── Heatmap container ── */
+.heatmapWrapper {
+  background: #07070f;
+  border: 1px solid #1a1a2e;
+  border-radius: 6px;
+  padding: 1.25rem 1.5rem 1rem;
+  overflow-x: auto;
+}
+
+.heatmapScroll {
+  min-width: 740px;
+}
+
+/* ── Month labels row ── */
+.monthRow {
+  display: flex;
+  padding-left: 36px;
+  margin-bottom: 6px;
+}
+
+.monthLabel {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.06em;
+  text-transform: capitalize;
+}
+
+/* ── Grid area (day labels + cells) ── */
+.gridArea {
+  display: flex;
+  gap: 0;
+}
+
+.dayLabels {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 36px;
+  padding: 2px 8px 2px 0;
+}
+
+.dayLabel {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.06em;
+  line-height: 13px;
+  height: 13px;
+}
+
+/* ── The cell grid ── */
+.grid {
+  display: grid;
+  grid-template-rows: repeat(7, 13px);
+  grid-auto-flow: column;
+  grid-auto-columns: 13px;
+  gap: 3px;
+}
+
+.cell {
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  cursor: default;
+  position: relative;
+  transition: outline 0.12s ease;
+}
+
+.cell:hover {
+  outline: 1.5px solid rgba(255, 255, 255, 0.35);
+  outline-offset: -1px;
+}
+
+/* Color levels (GitHub dark theme) */
+.level0 { background: #161b22; }
+.level1 { background: #0e4429; }
+.level2 { background: #006d32; }
+.level3 { background: #26a641; }
+.level4 { background: #39d353; }
+
+/* ── Tooltip ── */
+.cell[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1c2333;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
+  border: 1px solid #2a3040;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Legend (Less → More) ── */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 10px;
+  gap: 4px;
+}
+
+.footerLabel {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.06em;
+  margin: 0 3px;
+}
+
+.legendCell {
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+}
+
+/* ── Expand / Collapse button ── */
+.expandBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1.5rem auto 0;
+  padding: 0.55rem 1.4rem;
+  background: transparent;
+  border: 1px solid #1a1a2e;
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.expandBtn:hover {
+  border-color: var(--color-accent);
+  color: #fff;
+  background: rgba(59, 130, 246, 0.06);
+}
+
+.expandArrow {
+  display: inline-block;
+  transition: transform 0.3s ease;
+  font-size: 0.6rem;
+}
+
+.expandArrowOpen {
+  transform: rotate(180deg);
+}
+
+/* ── Contribution Activity timeline ── */
+.activity {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.5s ease, opacity 0.4s ease, margin 0.4s ease;
+  margin-top: 0;
+}
+
+.activityOpen {
+  max-height: 3000px;
+  opacity: 1;
+  margin-top: 2rem;
+}
+
+.monthSection {
+  margin-bottom: 2rem;
+}
+
+.monthHeading {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--color-accent);
+  letter-spacing: 0.08em;
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.15);
+}
+
+/* ── Activity entry card ── */
+.activityCard {
+  background: #07070f;
+  border: 1px solid #1a1a2e;
+  border-radius: 4px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.activityCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+}
+
+.activityIcon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(59, 130, 246, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.activityIcon svg {
+  width: 12px;
+  height: 12px;
+  fill: var(--color-accent);
+}
+
+.activityTitle {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: 0.02em;
+}
+
+.activityTitleBold {
+  font-weight: 700;
+  color: #fff;
+}
+
+/* ── Repo row inside an activity card ── */
+.repoRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.35rem 0 0.35rem 2rem;
+}
+
+.repoLink {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--color-accent);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+
+.repoLink:hover {
+  color: #6aa5ff;
+  text-decoration: underline;
+}
+
+.repoCommits {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.35);
+  white-space: nowrap;
+}
+
+/* ── Progress bar ── */
+.progressWrapper {
+  flex: 1;
+  min-width: 60px;
+  height: 8px;
+  background: #161b22;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #0e4429, #26a641);
+  transition: width 0.6s ease;
+}
+
+/* ── Loading / Error states ── */
+.loadingText,
+.errorText {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.loadingText {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.errorText {
+  color: #ef4444;
+}
+
+/* ── Loading skeleton pulse ── */
+.skeleton {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.15; }
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .content {
+    padding: 2rem 1.5rem 5rem;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .repoRow {
+    padding-left: 1rem;
+    flex-wrap: wrap;
+  }
+}
