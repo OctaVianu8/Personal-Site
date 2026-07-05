@@ -94,7 +94,7 @@ export default function Projects() {
   return (
     <section id="projects" className={styles.section}>
       <div ref={ref} className={`${styles.content}${visible ? ` ${styles.visible}` : ""}`}>
-        <h2 className={styles.heading}>GitHub API</h2>
+        <h2 className="sectionHeading">GitHub Projects</h2>
 
         {loading && (
           <p className={styles.loadingText}>Loading projects...</p>

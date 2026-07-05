@@ -28,7 +28,7 @@ export default function Experience() {
   return (
     <section id="experience" className={styles.section}>
       <div ref={ref} className={`${styles.content}${visible ? ` ${styles.visible}` : ""}`}>
-        <h2 className={styles.heading}>EXPERIENCE</h2>
+        <h2 className="sectionHeading">EXPERIENCE</h2>
 
         <div className={styles.timeline}>
           <div className={styles.line} />

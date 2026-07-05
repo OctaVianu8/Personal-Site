@@ -126,7 +126,7 @@ export default function GitHubHeatmap() {
       <section className={styles.section}>
         <div ref={ref} className={`${styles.content}${visible ? ` ${styles.visible}` : ""}`}>
           <div className={styles.header}>
-            <h2 className={styles.heading}>Contributions</h2>
+            <h2 className="sectionHeading sectionHeadingFlush">Contributions</h2>
           </div>
           <div className={styles.heatmapWrapper}>
             <div className={`${styles.loadingText} ${styles.skeleton}`}>
@@ -143,7 +143,7 @@ export default function GitHubHeatmap() {
       <section className={styles.section}>
         <div ref={ref} className={`${styles.content}${visible ? ` ${styles.visible}` : ""}`}>
           <div className={styles.header}>
-            <h2 className={styles.heading}>Contributions</h2>
+            <h2 className="sectionHeading sectionHeadingFlush">Contributions</h2>
           </div>
           <p className={styles.errorText}>{error}</p>
         </div>
@@ -155,7 +155,7 @@ export default function GitHubHeatmap() {
     <section id="contributions" className={styles.section}>
       <div ref={ref} className={`${styles.content}${visible ? ` ${styles.visible}` : ""}`}>
         <div className={styles.header}>
-          <h2 className={styles.heading}>Contributions</h2>
+          <h2 className="sectionHeading sectionHeadingFlush">Contributions</h2>
           <span className={styles.totalCount}>
             {totalContributions} contributions in the last year
           </span>

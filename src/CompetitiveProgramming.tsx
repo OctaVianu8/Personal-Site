@@ -111,7 +111,7 @@ export default function CompetitiveProgramming() {
   return (
     <section id="competitive-programming" className={styles.section}>
       <div ref={ref} className={`${styles.content}${visible ? ` ${styles.visible}` : ""}`}>
-        <h2 className={styles.heading}>Honors and Awards</h2>
+        <h2 className="sectionHeading">Honors and Awards</h2>
 
         <div className={styles.featured}>
           <span className={styles.featuredIcon}>
