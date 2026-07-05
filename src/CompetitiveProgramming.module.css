@@ -49,15 +49,19 @@
   transform: translateY(-2px);
 }
 
-.featuredEmoji {
+.featuredIcon {
   display: grid;
   width: 2.5rem;
   height: 2.5rem;
   place-items: center;
   border-radius: 0.85rem;
   background: var(--color-accent-soft);
-  font-size: 1.15rem;
-  line-height: 1;
+  color: var(--color-accent);
+}
+
+.awardIcon {
+  width: 1.15rem;
+  height: 1.15rem;
 }
 
 .featuredTop {
@@ -93,18 +97,35 @@
 }
 
 .scrollContainer {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
   gap: 0.75rem;
-  overflow: visible;
+  overflow-x: auto;
+  overflow-y: hidden;
   margin-bottom: 3rem;
-  padding-bottom: 0;
-  scroll-snap-type: none;
+  padding-bottom: 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(56, 217, 150, 0.35) transparent;
+  scroll-snap-type: x mandatory;
+}
+
+.scrollContainer::-webkit-scrollbar {
+  display: block;
+  height: 6px;
+}
+
+.scrollContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollContainer::-webkit-scrollbar-thumb {
+  background: rgba(56, 217, 150, 0.35);
+  border-radius: 999px;
 }
 
 .achievementCard {
   display: flex;
-  min-width: 0;
+  flex: 0 0 calc(33.333% - 0.5rem);
+  min-width: 17rem;
   flex-direction: column;
   padding: 1.25rem;
   cursor: default;
@@ -134,7 +155,7 @@
   gap: 0.75rem;
 }
 
-.achievementEmoji {
+.achievementIcon {
   display: grid;
   width: 2.35rem;
   height: 2.35rem;
@@ -142,8 +163,7 @@
   flex: 0 0 auto;
   border-radius: 0.8rem;
   background: var(--color-accent-soft);
-  font-size: 1rem;
-  line-height: 1;
+  color: var(--color-accent);
 }
 
 .achievementEvent {
@@ -276,7 +296,12 @@
   }
 
   .scrollContainer {
-    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .achievementCard {
+    flex-basis: 82%;
+    min-width: 16rem;
   }
 
   .terminalRow {

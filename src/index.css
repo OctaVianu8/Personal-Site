@@ -51,8 +51,7 @@ body {
   min-height: 100%;
   margin: 0;
   background:
-    linear-gradient(180deg, rgba(11, 10, 16, 0.72) 0%, rgba(11, 10, 16, 0.82) 48%, rgba(11, 10, 16, 0.95) 100%),
-    radial-gradient(ellipse at 50% 18%, rgba(56, 217, 150, 0.22), transparent 55%),
+    linear-gradient(180deg, rgba(11, 10, 16, 0.58) 0%, rgba(11, 10, 16, 0.78) 48%, rgba(11, 10, 16, 0.96) 100%),
     linear-gradient(135deg, #11101a 0%, #0b0a10 42%, #11150f 100%);
   color: var(--color-text);
   font-family: var(--font-display);
@@ -61,14 +60,39 @@ body {
   overflow-x: hidden;
 }
 
+@keyframes veilDrift {
+  0%,
+  100% {
+    transform: translate3d(-2%, -1%, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(2%, 1.5%, 0) scale(1.04);
+  }
+}
+
 body::before {
   content: "";
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: 0;
   pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(11, 10, 16, 0.1), rgba(11, 10, 16, 0.92)),
+    radial-gradient(ellipse at 48% 24%, rgba(56, 217, 150, 0.36), rgba(56, 217, 150, 0.13) 24%, transparent 60%),
+    radial-gradient(ellipse at 72% 2%, rgba(137, 247, 191, 0.18), transparent 46%),
+    radial-gradient(ellipse at 20% 12%, rgba(56, 217, 150, 0.14), transparent 42%);
+  filter: blur(34px) saturate(160%);
+  opacity: 0.92;
+  animation: veilDrift 18s ease-in-out infinite;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(11, 10, 16, 0.2), rgba(11, 10, 16, 0.9)),
     linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
     linear-gradient(180deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
   background-size: auto, 72px 72px, 72px 72px;
@@ -76,6 +100,8 @@ body::before {
 }
 
 #root {
+  position: relative;
+  z-index: 1;
   min-height: 100vh;
   isolation: isolate;
 }
