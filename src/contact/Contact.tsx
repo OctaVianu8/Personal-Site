@@ -1,6 +1,5 @@
 import { useFadeIn } from "../useFadeIn";
 import styles from "./Contact.module.css";
-import ThemeSwitcher from "../components/ThemeSwitcher";
 
 type IconProps = {
   className?: string;
@@ -70,7 +69,6 @@ export default function Contact() {
 
         <hr className={styles.divider} />
 
-        {/* <ThemeSwitcher /> */}
         <p className={styles.footer}>
           © 2025 Octavian Stănescu; Built with React + Vite, deployed on Cloudflare Pages
         </p>
