@@ -19,17 +19,7 @@
 }
 
 .glow {
-  position: absolute;
-  top: 5rem;
-  left: 50%;
-  width: min(52rem, 92vw);
-  height: 28rem;
-  transform: translateX(-50%);
-  border-radius: 999px;
-  background: radial-gradient(closest-side, rgba(56, 217, 150, 0.28), transparent 72%);
-  filter: blur(52px);
-  opacity: 0.78;
-  pointer-events: none;
+  display: none;
 }
 
 .content {
@@ -65,7 +55,7 @@
 
 .titleAccent {
   color: transparent;
-  background: linear-gradient(135deg, var(--color-accent), #89f7bf);
+  background: linear-gradient(135deg, var(--color-accent), #37d997);
   -webkit-background-clip: text;
   background-clip: text;
 }

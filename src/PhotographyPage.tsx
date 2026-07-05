@@ -2,9 +2,15 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "./navbar/Navbar";
 
-const BLUE = "#3b82f6";
-const FONT_DISPLAY = "'Bebas Neue', sans-serif";
-const FONT_MONO = "'Space Mono', monospace";
+const ACCENT = "var(--color-accent)";
+const ACCENT_SOFT = "var(--color-accent-soft)";
+const BG = "transparent";
+const CARD = "var(--color-card)";
+const BORDER = "var(--color-border)";
+const TEXT = "var(--color-text)";
+const FAINT = "var(--color-faint)";
+const FONT_DISPLAY = "var(--font-display)";
+const FONT_MONO = "var(--font-display)";
 
 interface Album {
   id: number;
@@ -23,15 +29,18 @@ interface Photo {
 const GRID_STYLES = `
   .pg-masonry {
     column-count: 3;
-    column-gap: 8px;
+    column-gap: 12px;
   }
   .pg-item {
     break-inside: avoid;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     position: relative;
     overflow: hidden;
-    border-radius: 2px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
+    border: 1px solid var(--color-border);
+    background: var(--color-card);
+    box-shadow: var(--shadow-soft);
   }
   .pg-item img {
     display: block;
@@ -45,7 +54,7 @@ const GRID_STYLES = `
   .pg-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(59, 130, 246, 0.15);
+    background: var(--color-accent-soft);
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none;
@@ -54,15 +63,20 @@ const GRID_STYLES = `
     opacity: 1;
   }
   .album-card {
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 2px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
     overflow: hidden;
     cursor: pointer;
-    transition: border-color 0.2s ease, transform 0.2s ease;
+    background: var(--color-card);
+    box-shadow: var(--shadow-soft);
+    backdrop-filter: blur(22px) saturate(150%);
+    -webkit-backdrop-filter: blur(22px) saturate(150%);
+    transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
   }
   .album-card:hover {
-    border-color: #3b82f6;
-    transform: translateY(-3px);
+    border-color: var(--color-accent-border);
+    background: var(--color-card-strong);
+    transform: translateY(-2px);
   }
   .albums-grid {
     display: grid;
@@ -115,7 +129,7 @@ function Lightbox({
     fontSize: "1.25rem",
     width: "2.75rem",
     height: "2.75rem",
-    borderRadius: "2px",
+    borderRadius: "999px",
     cursor: "pointer",
     display: "flex",
     alignItems: "center",
@@ -151,7 +165,7 @@ function Lightbox({
         src={`/api/photos/album-${albumId}/${photo.filename}`}
         alt=""
         onClick={e => e.stopPropagation()}
-        style={{ maxWidth: "90vw", maxHeight: "85vh", objectFit: "contain", borderRadius: "2px", zIndex: 1001, display: "block" }}
+        style={{ maxWidth: "90vw", maxHeight: "85vh", objectFit: "contain", borderRadius: "var(--radius-sm)", zIndex: 1001, display: "block" }}
       />
       <button
         onClick={e => { e.stopPropagation(); onNext(); }}
@@ -161,7 +175,7 @@ function Lightbox({
       >
         →
       </button>
-      <span style={{ position: "fixed", bottom: "2rem", left: "50%", transform: "translateX(-50%)", fontFamily: FONT_MONO, fontSize: "0.65rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.12em", zIndex: 1002 }}>
+      <span style={{ position: "fixed", bottom: "2rem", left: "50%", transform: "translateX(-50%)", fontFamily: FONT_MONO, fontSize: "0.78rem", color: FAINT, zIndex: 1002 }}>
         {idx + 1} / {photos.length}
       </span>
     </div>
@@ -180,10 +194,10 @@ function AlbumCard({ album, onClick }: { album: Album; onClick: () => void }) {
 
   return (
     <div className="album-card" onClick={onClick}>
-      <div style={{ position: "relative", aspectRatio: "4/3", overflow: "hidden", background: "#0a0a0e" }}>
+      <div style={{ position: "relative", aspectRatio: "4/3", overflow: "hidden", background: CARD }}>
         {photos.length === 0 ? (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
-            <span style={{ fontFamily: FONT_DISPLAY, fontSize: "3rem", color: "rgba(255,255,255,0.06)", letterSpacing: "0.05em" }}>
+            <span style={{ fontFamily: FONT_DISPLAY, fontSize: "3rem", fontWeight: 800, color: "rgba(255,255,255,0.12)" }}>
               {album.name.charAt(0).toUpperCase()}
             </span>
           </div>
@@ -208,7 +222,7 @@ function AlbumCard({ album, onClick }: { album: Album; onClick: () => void }) {
         <div style={{
           position: "absolute",
           inset: 0,
-          background: "linear-gradient(to top, rgba(5,5,8,0.7) 0%, transparent 50%)",
+          background: "linear-gradient(to top, rgba(11,10,16,0.82) 0%, transparent 55%)",
           pointerEvents: "none",
         }} />
         {photos.length > 1 && (
@@ -225,8 +239,8 @@ function AlbumCard({ album, onClick }: { album: Album; onClick: () => void }) {
                 style={{
                   width: i === idx ? "1.2rem" : "4px",
                   height: "3px",
-                  borderRadius: "2px",
-                  background: i === idx ? BLUE : "rgba(255,255,255,0.35)",
+                  borderRadius: "999px",
+                  background: i === idx ? ACCENT : "rgba(255,255,255,0.35)",
                   transition: "width 0.3s ease, background 0.3s ease",
                 }}
               />
@@ -235,10 +249,10 @@ function AlbumCard({ album, onClick }: { album: Album; onClick: () => void }) {
         )}
       </div>
       <div style={{ padding: "0.9rem 1.1rem 1.1rem" }}>
-        <div style={{ fontFamily: FONT_DISPLAY, fontSize: "1.4rem", color: "#fff", letterSpacing: "0.04em", marginBottom: "0.25rem" }}>
+        <div style={{ fontFamily: FONT_DISPLAY, fontSize: "1rem", color: TEXT, fontWeight: 700, lineHeight: 1.35, marginBottom: "0.25rem" }}>
           {album.name.toUpperCase()}
         </div>
-        <div style={{ fontFamily: FONT_MONO, fontSize: "0.6rem", color: "rgba(255,255,255,0.35)", letterSpacing: "0.1em" }}>
+        <div style={{ fontFamily: FONT_MONO, fontSize: "0.82rem", color: FAINT }}>
           {album.photo_count} photos
         </div>
       </div>
@@ -260,17 +274,17 @@ function AlbumList({ onSelect }: { onSelect: (slug: string) => void }) {
   }, []);
 
   return (
-    <div style={{ background: "#050508", minHeight: "100vh" }}>
+    <div style={{ background: BG, minHeight: "100vh", position: "relative", zIndex: 1 }}>
       <style>{GRID_STYLES}</style>
       <Navbar />
-      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "8rem 2.5rem 3rem" }}>
-        <h1 style={{ fontFamily: FONT_DISPLAY, fontSize: "clamp(3rem, 8vw, 6rem)", color: "#fff", letterSpacing: "0.04em", lineHeight: 1, marginBottom: "0.6rem" }}>
+      <div style={{ maxWidth: "72rem", margin: "0 auto", padding: "8rem 1.25rem 3rem" }}>
+        <h1 style={{ fontFamily: FONT_DISPLAY, fontSize: "clamp(3rem, 8vw, 5.8rem)", color: TEXT, fontWeight: 800, lineHeight: 0.98, marginBottom: "0.8rem" }}>
           PHOTOGRAPHY
         </h1>
-        <div style={{ width: "3.5rem", height: "2px", background: BLUE, marginBottom: "1.25rem" }} />
+        <div style={{ width: "3.5rem", height: "3px", borderRadius: "999px", background: ACCENT, marginBottom: "1.5rem" }} />
 
-        {error && <p style={{ color: "#ef4444", fontFamily: FONT_MONO, fontSize: "0.72rem" }}>{error}</p>}
-        {loading && <p style={{ color: "rgba(255,255,255,0.3)", fontFamily: FONT_MONO, fontSize: "0.72rem", letterSpacing: "0.08em" }}>Loading...</p>}
+        {error && <p style={{ color: "var(--color-danger)", fontFamily: FONT_MONO, fontSize: "0.92rem" }}>{error}</p>}
+        {loading && <p style={{ color: FAINT, fontFamily: FONT_MONO, fontSize: "0.92rem" }}>Loading...</p>}
 
         <div className="albums-grid">
           {albums.map(album => (
@@ -279,8 +293,8 @@ function AlbumList({ onSelect }: { onSelect: (slug: string) => void }) {
         </div>
       </div>
 
-      <div style={{ textAlign: "center", padding: "0 2.5rem 3rem", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "2rem" }}>
-        <p style={{ fontFamily: FONT_MONO, fontSize: "0.65rem", color: "rgba(255,255,255,0.22)", letterSpacing: "0.06em", lineHeight: "1.8" }}>
+      <div id="contact" style={{ maxWidth: "72rem", margin: "0 auto", padding: "2rem 1.25rem 3rem", borderTop: `1px solid ${BORDER}` }}>
+        <p style={{ fontFamily: FONT_MONO, fontSize: "0.82rem", color: FAINT, lineHeight: "1.7", textAlign: "right" }}>
           © 2025 Octavian Stănescu — Built with React + Vite, deployed on Cloudflare Pages
         </p>
       </div>
@@ -309,28 +323,28 @@ function AlbumView({ slug, onBack }: { slug: string; onBack: () => void }) {
   const next = useCallback(() => setLightboxIdx(i => (i !== null && album ? Math.min(album.photos.length - 1, i + 1) : null)), [album]);
 
   return (
-    <div style={{ background: "#050508", minHeight: "100vh" }}>
+    <div style={{ background: BG, minHeight: "100vh", position: "relative", zIndex: 1 }}>
       <style>{GRID_STYLES}</style>
       <Navbar />
-      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "8rem 2.5rem 3rem" }}>
+      <div style={{ maxWidth: "72rem", margin: "0 auto", padding: "8rem 1.25rem 3rem" }}>
         <button
           onClick={onBack}
-          style={{ background: "none", border: "none", color: BLUE, fontFamily: FONT_MONO, fontSize: "0.68rem", letterSpacing: "0.1em", cursor: "pointer", padding: 0, marginBottom: "2.5rem", display: "block" }}
+          style={{ background: ACCENT_SOFT, border: `1px solid ${BORDER}`, borderRadius: "999px", color: ACCENT, fontFamily: FONT_MONO, fontSize: "0.88rem", fontWeight: 700, cursor: "pointer", padding: "0.55rem 0.9rem", marginBottom: "2.5rem", display: "block" }}
           onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
-          onMouseLeave={e => (e.currentTarget.style.color = BLUE)}
+          onMouseLeave={e => (e.currentTarget.style.color = ACCENT)}
         >
           ← ALL ALBUMS
         </button>
 
-        {error && <p style={{ color: "#ef4444", fontFamily: FONT_MONO, fontSize: "0.72rem" }}>{error}</p>}
-        {loading && <p style={{ color: "rgba(255,255,255,0.3)", fontFamily: FONT_MONO, fontSize: "0.72rem", letterSpacing: "0.08em" }}>Loading...</p>}
+        {error && <p style={{ color: "var(--color-danger)", fontFamily: FONT_MONO, fontSize: "0.92rem" }}>{error}</p>}
+        {loading && <p style={{ color: FAINT, fontFamily: FONT_MONO, fontSize: "0.92rem" }}>Loading...</p>}
 
         {album && (
           <>
-            <h1 style={{ fontFamily: FONT_DISPLAY, fontSize: "clamp(3rem, 8vw, 6rem)", color: "#fff", letterSpacing: "0.04em", lineHeight: 1, marginBottom: "0.6rem" }}>
+            <h1 style={{ fontFamily: FONT_DISPLAY, fontSize: "clamp(3rem, 8vw, 5.8rem)", color: TEXT, fontWeight: 800, lineHeight: 0.98, marginBottom: "0.8rem" }}>
               {album.name.toUpperCase()}
             </h1>
-            <div style={{ width: "3.5rem", height: "2px", background: BLUE, marginBottom: "2.5rem" }} />
+            <div style={{ width: "3.5rem", height: "3px", borderRadius: "999px", background: ACCENT, marginBottom: "2.5rem" }} />
 
             <div className="pg-masonry">
               {album.photos.map((photo, i) => (
@@ -344,8 +358,8 @@ function AlbumView({ slug, onBack }: { slug: string; onBack: () => void }) {
         )}
       </div>
 
-      <div style={{ textAlign: "center", padding: "0 2.5rem 3rem", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "2rem" }}>
-        <p style={{ fontFamily: FONT_MONO, fontSize: "0.65rem", color: "rgba(255,255,255,0.22)", letterSpacing: "0.06em", lineHeight: "1.8" }}>
+      <div id="contact" style={{ maxWidth: "72rem", margin: "0 auto", padding: "2rem 1.25rem 3rem", borderTop: `1px solid ${BORDER}` }}>
+        <p style={{ fontFamily: FONT_MONO, fontSize: "0.82rem", color: FAINT, lineHeight: "1.7", textAlign: "right" }}>
           © 2025 Octavian Stănescu — Built with React + Vite, deployed on Cloudflare Pages
         </p>
       </div>
