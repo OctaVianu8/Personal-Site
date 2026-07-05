@@ -4,12 +4,10 @@ import styles from "./Projects.module.css";
 
 const GITHUB_USERNAME = "OctaVianu8";
 
-// Repos from other accounts that you collaborated on (format: "owner/repo")
 const EXTRA_REPOS: string[] = [
   "ErikoNitu/Local-Vibe",
 ];
 
-// What GitHub gives us back
 interface GitHubRepo {
   id: number;
   name: string;
@@ -21,7 +19,6 @@ interface GitHubRepo {
   stargazers_count: number;
 }
 
-// What we display on the page
 interface Project {
   name: string;
   desc: string;
@@ -58,7 +55,6 @@ export default function Projects() {
 
       const repos: GitHubRepo[] = await response.json();
 
-      // Fetch any collaborative repos from other accounts
       const extraPromises = EXTRA_REPOS.map(async (fullName) => {
         const res = await fetch(`https://api.github.com/repos/${fullName}`, {
           headers: { Accept: "application/vnd.github+json" },
@@ -70,14 +66,12 @@ export default function Projects() {
         (repo): repo is GitHubRepo => repo !== null
       );
 
-      // Combine own repos (without forks) and extra repos, then sort by stars
       const allRepos = [
         ...repos.filter((repo) => !repo.fork),
         ...extraRepos,
       ];
       allRepos.sort((a, b) => b.stargazers_count - a.stargazers_count);
 
-      // Turn each repo into something we can display
       const displayProjects: Project[] = allRepos.map((repo) => ({
         name: repo.name,
         desc: repo.description || "",

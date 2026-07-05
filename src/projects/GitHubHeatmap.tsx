@@ -3,9 +3,9 @@ import { useFadeIn } from "../useFadeIn";
 import styles from "./GitHubHeatmap.module.css";
 
 interface ContributionDay {
-  date: string; // YYYY-MM-DD
-  level: number; // 0–4 (from GitHub)
-  count: number; // exact contribution count
+  date: string;
+  level: number;
+  count: number;
 }
 
 interface ContributionData {
@@ -14,7 +14,7 @@ interface ContributionData {
 }
 
 interface MonthActivity {
-  month: string; // "May 2026"
+  month: string;
   commits: { fullName: string; commits: number }[];
   totalCommits: number;
   createdRepos: { fullName: string; language: string | null }[];
@@ -29,7 +29,6 @@ const MONTH_NAMES = [
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 ];
 
-/** Organize flat day array into weeks (columns) for the grid. */
 function buildWeeksFromDays(days: ContributionDay[]): ContributionDay[][] {
   if (days.length === 0) return [];
 
@@ -42,7 +41,7 @@ function buildWeeksFromDays(days: ContributionDay[]): ContributionDay[][] {
 
   for (const day of sorted) {
     const d = new Date(day.date + "T00:00:00");
-    const dow = d.getDay(); // 0=Sun
+    const dow = d.getDay();
 
     if (dow === 0 && currentWeek.length > 0) {
       weeks.push(currentWeek);
@@ -57,8 +56,6 @@ function buildWeeksFromDays(days: ContributionDay[]): ContributionDay[][] {
 
   return weeks;
 }
-
-// ── Component ──────────────────────────────────────────────────────────
 
 export default function GitHubHeatmap() {
   const { ref, visible } = useFadeIn(0.08);
@@ -76,7 +73,6 @@ export default function GitHubHeatmap() {
 
   async function loadData() {
     try {
-      // Fetch both data sources from our proxy endpoints
       const [contribRes, activityRes] = await Promise.all([
         fetch("/api/github-contributions"),
         fetch("/api/github-activity"),
@@ -101,7 +97,6 @@ export default function GitHubHeatmap() {
     }
   }
 
-  // Derive grid data from real contribution calendar
   const weeks = useMemo(
     () => (contribData ? buildWeeksFromDays(contribData.days) : []),
     [contribData]
@@ -110,7 +105,6 @@ export default function GitHubHeatmap() {
   const totalContributions = contribData?.total ?? 0;
   const monthlyActivity = activityData?.activities ?? [];
 
-  // Compute month labels with positions
   const monthLabels = useMemo(() => {
     const labels: { label: string; col: number }[] = [];
     let lastMonth = -1;
@@ -167,10 +161,8 @@ export default function GitHubHeatmap() {
           </span>
         </div>
 
-        {/* ── Heatmap ── */}
         <div className={styles.heatmapWrapper}>
           <div className={styles.heatmapScroll}>
-            {/* Month labels */}
             <div className={styles.monthRow}>
               {monthLabels.map((ml, i) => {
                 const nextCol = i < monthLabels.length - 1 ? monthLabels[i + 1].col : weeks.length;
@@ -187,7 +179,6 @@ export default function GitHubHeatmap() {
               })}
             </div>
 
-            {/* Day labels + grid */}
             <div className={styles.gridArea}>
               <div className={styles.dayLabels}>
                 <span className={styles.dayLabel}></span>
@@ -229,7 +220,6 @@ export default function GitHubHeatmap() {
               </div>
             </div>
 
-            {/* Legend */}
             <div className={styles.footer}>
               <span className={styles.footerLabel}>Less</span>
               {[0, 1, 2, 3, 4].map((lvl) => (
@@ -243,7 +233,6 @@ export default function GitHubHeatmap() {
           </div>
         </div>
 
-        {/* ── Expand button ── */}
         <button
           className={styles.expandBtn}
           onClick={() => setExpanded((e) => !e)}
@@ -257,13 +246,11 @@ export default function GitHubHeatmap() {
           {expanded ? "Collapse activity" : "Expand activity"}
         </button>
 
-        {/* ── Contribution Activity timeline ── */}
         <div className={`${styles.activity} ${expanded ? styles.activityOpen : ""}`}>
           {monthlyActivity.map((ma) => (
             <div key={ma.month} className={styles.monthSection}>
               <h3 className={styles.monthHeading}>{ma.month.toUpperCase()}</h3>
 
-              {/* Commits Section */}
               {ma.commits.length > 0 && (
                 <div className={styles.activityCard}>
                   <div className={styles.activityCardHeader}>
@@ -313,7 +300,6 @@ export default function GitHubHeatmap() {
                 </div>
               )}
 
-              {/* Created Repositories Section */}
               {ma.createdRepos.length > 0 && (
                 <div className={styles.activityCard}>
                   <div className={styles.activityCardHeader}>

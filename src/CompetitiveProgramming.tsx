@@ -66,7 +66,6 @@ export default function CompetitiveProgramming() {
       <div ref={ref} className={`${styles.content}${visible ? ` ${styles.visible}` : ""}`}>
         <h2 className={styles.heading}>Honors and Awards</h2>
 
-        {/* Featured Award: CEOI */}
         <div className={styles.featured}>
           <span className={styles.featuredEmoji}>{ACHIEVEMENTS[0].emoji}</span>
           <div className={styles.featuredTop}>
@@ -76,7 +75,6 @@ export default function CompetitiveProgramming() {
           <p className={styles.featuredDesc}>{ACHIEVEMENTS[0].desc}</p>
         </div>
 
-        {/* Scrollable awards row */}
         <div className={styles.scrollContainer}>
           {ACHIEVEMENTS.slice(1).map((a, i) => (
             <div key={i} className={styles.achievementCard}>
@@ -92,7 +90,6 @@ export default function CompetitiveProgramming() {
           ))}
         </div>
 
-        {/* Codeforces profile */}
         <div className={styles.terminalContainer}>
           <div className={styles.terminal}>
             <div className={styles.terminalHeader}>
