@@ -10,25 +10,16 @@
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
-  background:
-    linear-gradient(180deg, rgba(3, 8, 10, 0.2) 0%, rgba(3, 8, 10, 0.84) 64%, rgba(3, 8, 10, 0.96) 100%),
-    radial-gradient(ellipse 60% 44% at 52% 0%, rgba(0, 200, 117, 0.42) 0%, rgba(0, 117, 58, 0.24) 42%, rgba(0, 36, 18, 0.12) 64%, transparent 82%),
-    radial-gradient(ellipse 42% 60% at 36% 25%, rgba(0, 180, 96, 0.2) 0%, rgba(0, 80, 42, 0.1) 42%, transparent 72%),
-    #03080a;
+  background: #03080a;
 }
 
 .veil::before {
   content: "";
   position: absolute;
-  top: -24rem;
-  left: 36%;
-  width: min(28rem, 38vw);
-  height: 54rem;
-  transform: rotate(28deg);
-  transform-origin: top center;
-  background: linear-gradient(180deg, rgba(0, 200, 117, 0.38) 0%, rgba(0, 120, 58, 0.18) 48%, transparent 84%);
-  filter: blur(34px);
-  opacity: 0.78;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(3, 8, 10, 0.34) 0%, rgba(3, 8, 10, 0.48) 50%, rgba(3, 8, 10, 0.78) 100%),
+    radial-gradient(ellipse at 50% 32%, rgba(3, 8, 10, 0.18) 0%, rgba(3, 8, 10, 0.42) 55%, rgba(3, 8, 10, 0.74) 100%);
 }
 
 .veil::after {
@@ -36,10 +27,7 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(3, 8, 10, 0) 0%, rgba(3, 8, 10, 0.32) 48%, rgba(3, 8, 10, 0.88) 100%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E");
-  background-blend-mode: normal, soft-light;
-  opacity: 0.65;
+    linear-gradient(90deg, rgba(3, 8, 10, 0.08) 0%, rgba(3, 8, 10, 0.2) 35%, rgba(3, 8, 10, 0.62) 74%, rgba(3, 8, 10, 0.84) 100%);
 }
 
 .routes {

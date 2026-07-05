@@ -1,10 +1,10 @@
 import styles from "./Hero.module.css";
 
 const STATS = [
-  { value: "Gold", label: "ONI 2024" },
+  { value: "AMIQ EDA", label: "Software Engineering Intern" },
+  { value: "Discover Citadel", label: "Attendee" },
   { value: "CEOI", label: "Problem Setter" },
-  { value: "Citadel", label: "Discover" },
-  { value: "AMIQ Eda", label: "Software Engineering Intern" },
+  { value: "RCPC", label: "Bronze Medalist" },
 ] as const;
 
 function HeroTitle() {
