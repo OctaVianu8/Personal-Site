@@ -23,6 +23,21 @@ const FileTextIcon = ({ className }: IconProps) => (
   </svg>
 );
 
+const MenuIcon = ({ className }: IconProps) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <line x1="4" x2="20" y1="12" y2="12" />
+    <line x1="4" x2="20" y1="6" y2="6" />
+    <line x1="4" x2="20" y1="18" y2="18" />
+  </svg>
+);
+
+const CloseIcon = ({ className }: IconProps) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M18 6 6 18" />
+    <path d="m6 6 12 12" />
+  </svg>
+);
+
 const ANCHOR_LINKS = [
   { label: "About", hash: "#about" },
   { label: "Projects", hash: "#projects" },
@@ -32,6 +47,7 @@ const ANCHOR_LINKS = [
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const onHome = location.pathname === "/";
   const onPhoto = location.pathname === "/photography";
@@ -42,16 +58,46 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [menuOpen]);
+
+  const closeMenu = () => setMenuOpen(false);
+
   return (
     <nav className={scrolled ? `${styles.navbar} ${styles.scrolled}` : styles.navbar}>
       <Link to="/" className={styles.logo}>OS</Link>
 
-      <div className={styles.links}>
+      <button
+        type="button"
+        className={styles.menuButton}
+        aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+        aria-expanded={menuOpen}
+        aria-controls="mobile-navigation-menu"
+        onClick={() => setMenuOpen((open) => !open)}
+      >
+        {menuOpen ? <CloseIcon className={styles.menuIcon} /> : <MenuIcon className={styles.menuIcon} />}
+      </button>
+
+      <div
+        id="mobile-navigation-menu"
+        className={`${styles.links}${menuOpen ? ` ${styles.linksOpen}` : ""}`}
+      >
         {ANCHOR_LINKS.map(({ label, hash }) => (
           <a
             key={label}
             href={onHome ? hash : `/${hash}`}
             className={styles.link}
+            onClick={closeMenu}
           >
             {label}
           </a>
@@ -60,6 +106,7 @@ export default function Navbar() {
         <Link
           to="/photography"
           className={`${styles.link}${onPhoto ? ` ${styles.linkActive}` : ""}`}
+          onClick={closeMenu}
         >
           <CameraIcon className={styles.linkIcon} />
           Photography
@@ -70,6 +117,7 @@ export default function Navbar() {
           target="_blank"
           rel="noopener noreferrer"
           className={styles.cv}
+          onClick={closeMenu}
         >
           <FileTextIcon className={styles.cvIcon} />
           CV

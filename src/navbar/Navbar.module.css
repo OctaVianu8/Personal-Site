@@ -46,6 +46,10 @@
   min-width: 0;
 }
 
+.menuButton {
+  display: none;
+}
+
 .link {
   display: inline-flex;
   align-items: center;
@@ -114,28 +118,81 @@
 
 @media (max-width: 768px) {
   .navbar {
-    align-items: flex-start;
+    align-items: center;
     padding: 0.8rem 1rem;
   }
 
+  .menuButton {
+    display: grid;
+    width: 2.25rem;
+    height: 2.25rem;
+    place-items: center;
+    flex: 0 0 auto;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: var(--color-card);
+    color: var(--color-text);
+    cursor: pointer;
+    backdrop-filter: blur(22px) saturate(150%);
+    -webkit-backdrop-filter: blur(22px) saturate(150%);
+    transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+  }
+
+  .menuButton:hover,
+  .menuButton[aria-expanded="true"] {
+    border-color: var(--color-accent-border);
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
+  }
+
+  .menuIcon {
+    width: 1rem;
+    height: 1rem;
+  }
+
   .links {
-    overflow-x: auto;
-    justify-content: flex-start;
-    gap: 0.2rem;
-    max-width: calc(100vw - 4.4rem);
-    padding-bottom: 0.1rem;
+    position: absolute;
+    top: calc(100% + 0.55rem);
+    left: 1rem;
+    right: 1rem;
+    display: grid;
+    gap: 0.35rem;
+    min-width: 0;
+    max-width: none;
+    padding: 0.55rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: rgba(11, 10, 16, 0.94);
+    box-shadow: var(--shadow-card);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    opacity: 0;
+    transform: translateY(-0.35rem) scale(0.98);
+    pointer-events: none;
+    visibility: hidden;
+    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease;
+  }
+
+  .linksOpen {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+    visibility: visible;
   }
 
   .link {
-    min-height: 2.1rem;
-    padding: 0 0.7rem;
-    font-size: 0.78rem;
+    justify-content: flex-start;
+    min-height: 2.5rem;
+    padding: 0 0.85rem;
+    font-size: 0.88rem;
   }
 
   .cv {
-    min-height: 2.1rem;
-    margin-left: 0.15rem;
-    padding: 0 0.8rem;
-    font-size: 0.78rem;
+    justify-content: center;
+    min-height: 2.5rem;
+    margin-left: 0;
+    margin-top: 0.2rem;
+    padding: 0 0.85rem;
+    font-size: 0.88rem;
   }
 }
