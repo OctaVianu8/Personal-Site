@@ -1,5 +1,5 @@
-import { useFadeIn } from "./useFadeIn";
-import styles from "./CompetitiveProgramming.module.css";
+import { useFadeIn } from "../useFadeIn";
+import styles from "./HonorsAndAwards.module.css";
 
 type IconProps = {
   className?: string;
@@ -98,18 +98,14 @@ const ACHIEVEMENTS = [
   },
 ] as const;
 
-const TERMINAL_ROWS = [
-  ["platform", "codeforces"],
-  ["focus", "algorithms & data structures"],
-  ["active since", "2021"],
-] as const;
 
-export default function CompetitiveProgramming() {
+
+export default function HonorsAndAwards() {
   const { ref, visible } = useFadeIn(0.08);
   const FeaturedIcon = ACHIEVEMENTS[0].Icon;
 
   return (
-    <section id="competitive-programming" className={styles.section}>
+    <section id="honors-and-awards" className={styles.section}>
       <div ref={ref} className={`${styles.content}${visible ? ` ${styles.visible}` : ""}`}>
         <h2 className="sectionHeading">Honors and Awards</h2>
 
@@ -144,31 +140,6 @@ export default function CompetitiveProgramming() {
           })}
         </div>
 
-        <div className={styles.terminalContainer}>
-          <div className={styles.terminal}>
-            <div className={styles.terminalHeader}>
-              <span className={styles.terminalPrompt}>&gt;_</span>
-              <span>PROFILE</span>
-            </div>
-            <div className={styles.terminalDivider} />
-            {TERMINAL_ROWS.map(([key, val]) => (
-              <div key={key} className={styles.terminalRow}>
-                <span className={styles.terminalKey}>{key}</span>
-                <span className={styles.terminalVal}>{val}</span>
-              </div>
-            ))}
-            <div className={styles.terminalMidRule} />
-            <a
-              href="https://codeforces.com/profile/Stanescu_Octav"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.profileLink}
-            >
-              <span>→</span>
-              <span>view codeforces profile</span>
-            </a>
-          </div>
-        </div>
       </div>
     </section>
   );

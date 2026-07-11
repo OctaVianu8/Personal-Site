@@ -41,7 +41,7 @@ const CloseIcon = ({ className }: IconProps) => (
 const ANCHOR_LINKS = [
   { label: "About", hash: "#about" },
   { label: "Projects", hash: "#projects" },
-  { label: "Competitive Programming", hash: "#competitive-programming" },
+  { label: "Honors and Awards", hash: "#honors-and-awards" },
   { label: "Contact", hash: "#contact" },
 ] as const;
 

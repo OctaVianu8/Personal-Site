@@ -25,7 +25,7 @@ export default function About() {
               </p>
               <p className={styles.body}>
                 In my free time, I enjoy photography, hiking, and exploring new places. I
-                also like to read about technology, science, and psychology.
+                also like to read about technology, and science, and play chess, bridge and poker.
               </p>
             </div>
           </div>
