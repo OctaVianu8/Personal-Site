@@ -4,10 +4,29 @@ const CORS = {
   "Access-Control-Allow-Headers": "Content-Type",
 };
 
+const MAX_CV_SIZE = 10 * 1024 * 1024;
+
+interface DatabaseStatement {
+  bind(...values: unknown[]): DatabaseStatement;
+  first<T = Record<string, unknown>>(): Promise<T | null>;
+  all<T = Record<string, unknown>>(): Promise<{ results: T[] }>;
+  run(): Promise<unknown>;
+}
+
+interface StorageObject {
+  body: ReadableStream;
+  httpMetadata?: { contentType?: string };
+}
+
 interface Env {
-  DB: any;
-  PHOTO_BUCKET: any;
-  ASSETS: any;
+  DB: { prepare(query: string): DatabaseStatement };
+  PHOTO_BUCKET: {
+    put(key: string, value: ArrayBuffer, options?: { httpMetadata?: { contentType?: string } }): Promise<void>;
+    get(key: string): Promise<StorageObject | null>;
+    delete(key: string | string[]): Promise<void>;
+    list(options?: { prefix?: string }): Promise<{ objects: Array<{ key: string }> }>;
+  };
+  ASSETS: { fetch(request: Request): Promise<Response> };
 }
 
 export default {
@@ -17,6 +36,14 @@ export default {
 
     if (method === "OPTIONS") {
       return new Response(null, { status: 204, headers: CORS });
+    }
+
+    // Keep the public CV URL stable while the selected file lives in R2.
+    if (pathname === "/CV.pdf" && (method === "GET" || method === "HEAD")) {
+      const response = await serveActiveCv(env);
+      return method === "HEAD"
+        ? new Response(null, { status: response.status, headers: response.headers })
+        : response;
     }
 
     if (pathname.startsWith("/api/")) {
@@ -47,6 +74,112 @@ async function handleApi(
   method: string
 ): Promise<Response> {
 
+  // GET /api/cvs  (recent versions, with the selected version first)
+  if (pathname === "/api/cvs" && method === "GET") {
+    const result = await env.DB.prepare(
+      `SELECT c.id, c.original_filename, c.size_bytes, c.uploaded_at,
+         CASE WHEN CAST(c.id AS TEXT) = s.value THEN 1 ELSE 0 END AS is_active
+       FROM cv_files c
+       LEFT JOIN site_settings s ON s.key = 'active_cv_id'
+       ORDER BY is_active DESC, c.uploaded_at DESC, c.id DESC
+       LIMIT 8`
+    ).all<{ id: number; original_filename: string; size_bytes: number; uploaded_at: string; is_active: number }>();
+    return Response.json(result.results, { headers: CORS });
+  }
+
+  // POST /api/cvs/upload  (new uploads become the public version)
+  if (pathname === "/api/cvs/upload" && method === "POST") {
+    const form = await request.formData();
+    const file = form.get("file");
+
+    if (!(file instanceof File)) {
+      return Response.json({ error: "Choose a PDF file to upload." }, { status: 400, headers: CORS });
+    }
+    if (file.size === 0 || file.size > MAX_CV_SIZE) {
+      return Response.json({ error: "The PDF must be between 1 byte and 10 MB." }, { status: 400, headers: CORS });
+    }
+
+    const contents = await file.arrayBuffer();
+    if (!hasPdfSignature(contents)) {
+      return Response.json({ error: "The uploaded file is not a valid PDF." }, { status: 400, headers: CORS });
+    }
+
+    const storageKey = `cvs/${crypto.randomUUID()}.pdf`;
+    await env.PHOTO_BUCKET.put(storageKey, contents, {
+      httpMetadata: { contentType: "application/pdf" },
+    });
+
+    let cv: { id: number; original_filename: string; size_bytes: number; uploaded_at: string } | null;
+    try {
+      cv = await env.DB.prepare(
+        `INSERT INTO cv_files (original_filename, storage_key, size_bytes, uploaded_at)
+         VALUES (?, ?, ?, datetime('now'))
+         RETURNING id, original_filename, size_bytes, uploaded_at`
+      ).bind(normalizeCvFilename(file.name), storageKey, file.size)
+        .first<{ id: number; original_filename: string; size_bytes: number; uploaded_at: string }>();
+    } catch (error) {
+      await env.PHOTO_BUCKET.delete(storageKey);
+      throw error;
+    }
+
+    if (!cv) throw new Error("The uploaded CV record could not be created.");
+
+    await env.DB.prepare(
+      `INSERT INTO site_settings (key, value, updated_at)
+       VALUES ('active_cv_id', ?, datetime('now'))
+       ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at`
+    ).bind(String(cv.id)).run();
+
+    return Response.json({ ...cv, is_active: 1 }, { status: 201, headers: CORS });
+  }
+
+  // PATCH /api/cvs/:id/activate
+  const mCvActivate = pathname.match(/^\/api\/cvs\/(\d+)\/activate$/);
+  if (mCvActivate && method === "PATCH") {
+    const cv = await env.DB.prepare(`SELECT id FROM cv_files WHERE id = ?`)
+      .bind(mCvActivate[1]).first<{ id: number }>();
+    if (!cv) return Response.json({ error: "CV version not found." }, { status: 404, headers: CORS });
+
+    await env.DB.prepare(
+      `INSERT INTO site_settings (key, value, updated_at)
+       VALUES ('active_cv_id', ?, datetime('now'))
+       ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at`
+    ).bind(mCvActivate[1]).run();
+    return Response.json({ ok: true }, { headers: CORS });
+  }
+
+  // GET /api/cvs/:id/file  (preview a stored version)
+  const mCvFile = pathname.match(/^\/api\/cvs\/(\d+)\/file$/);
+  if (mCvFile && method === "GET") {
+    const cv = await env.DB.prepare(
+      `SELECT original_filename, storage_key FROM cv_files WHERE id = ?`
+    ).bind(mCvFile[1]).first() as { original_filename: string; storage_key: string } | null;
+    if (!cv) return new Response("Not found", { status: 404, headers: CORS });
+
+    const object = await env.PHOTO_BUCKET.get(cv.storage_key);
+    if (!object) return new Response("Stored PDF not found", { status: 404, headers: CORS });
+    return pdfResponse(object, cv.original_filename, CORS);
+  }
+
+  // DELETE /api/cvs/:id  (the live version must be replaced first)
+  const mCv = pathname.match(/^\/api\/cvs\/(\d+)$/);
+  if (mCv && method === "DELETE") {
+    const cv = await env.DB.prepare(
+      `SELECT c.storage_key,
+         CASE WHEN CAST(c.id AS TEXT) = s.value THEN 1 ELSE 0 END AS is_active
+       FROM cv_files c LEFT JOIN site_settings s ON s.key = 'active_cv_id'
+       WHERE c.id = ?`
+    ).bind(mCv[1]).first() as { storage_key: string; is_active: number } | null;
+    if (!cv) return Response.json({ error: "CV version not found." }, { status: 404, headers: CORS });
+    if (cv.is_active) {
+      return Response.json({ error: "Select another CV before deleting the live version." }, { status: 409, headers: CORS });
+    }
+
+    await env.PHOTO_BUCKET.delete(cv.storage_key);
+    await env.DB.prepare(`DELETE FROM cv_files WHERE id = ?`).bind(mCv[1]).run();
+    return Response.json({ ok: true }, { headers: CORS });
+  }
+
   // GET /api/albums  POST /api/albums
   if (pathname === "/api/albums") {
     if (method === "GET") {
@@ -54,8 +187,8 @@ async function handleApi(
         `SELECT a.id, a.name, a.slug, COUNT(p.id) AS photo_count
          FROM albums a LEFT JOIN photos p ON p.album_id = a.id
          GROUP BY a.id ORDER BY a.created_at DESC`
-      ).all();
-      const albums = r.results as any[];
+      ).all<{ id: number; name: string; slug: string; photo_count: number; preview_photos?: string[] }>();
+      const albums = r.results;
       if (albums.length > 0) {
         const previews = await env.DB.prepare(
           `SELECT album_id, filename FROM (
@@ -63,9 +196,9 @@ async function handleApi(
                ROW_NUMBER() OVER (PARTITION BY album_id ORDER BY display_order ASC) AS rn
              FROM photos
            ) WHERE rn <= 5`
-        ).all();
+        ).all<{ album_id: number; filename: string }>();
         const map: Record<number, string[]> = {};
-        for (const row of previews.results as any[]) {
+        for (const row of previews.results) {
           if (!map[row.album_id]) map[row.album_id] = [];
           map[row.album_id].push(row.filename);
         }
@@ -89,7 +222,7 @@ async function handleApi(
     if (method === "GET") {
       const album = await env.DB.prepare(
         `SELECT * FROM albums WHERE slug = ?`
-      ).bind(param).first();
+      ).bind(param).first<{ id: number; name: string; slug: string; created_at: string }>();
       if (!album) return Response.json({ error: "Not found" }, { status: 404, headers: CORS });
       const photos = await env.DB.prepare(
         `SELECT id, filename, display_order FROM photos WHERE album_id = ? ORDER BY display_order ASC`
@@ -99,7 +232,7 @@ async function handleApi(
     if (method === "DELETE") {
       const listed = await env.PHOTO_BUCKET.list({ prefix: `album-${param}/` });
       if (listed.objects.length > 0) {
-        await env.PHOTO_BUCKET.delete(listed.objects.map((o: any) => o.key));
+        await env.PHOTO_BUCKET.delete(listed.objects.map((object) => object.key));
       }
       await env.DB.prepare(`DELETE FROM photos WHERE album_id = ?`).bind(param).run();
       await env.DB.prepare(`DELETE FROM albums WHERE id = ?`).bind(param).run();
@@ -118,7 +251,7 @@ async function handleApi(
     });
     const maxRow = await env.DB.prepare(
       `SELECT COALESCE(MAX(display_order), 0) AS max_order FROM photos WHERE album_id = ?`
-    ).bind(albumId).first();
+    ).bind(albumId).first<{ max_order: number }>();
     const nextOrder = (maxRow?.max_order ?? 0) + 1;
     const photo = await env.DB.prepare(
       `INSERT INTO photos (album_id, filename, display_order, created_at) VALUES (?, ?, ?, datetime('now')) RETURNING *`
@@ -294,6 +427,51 @@ async function handleApi(
   }
 
   return Response.json({ error: "Not found" }, { status: 404, headers: CORS });
+}
+
+async function serveActiveCv(env: Env): Promise<Response> {
+  const cv = await env.DB.prepare(
+    `SELECT c.original_filename, c.storage_key
+     FROM cv_files c
+     JOIN site_settings s ON s.key = 'active_cv_id' AND s.value = CAST(c.id AS TEXT)`
+  ).first() as { original_filename: string; storage_key: string } | null;
+
+  if (!cv) return new Response("No CV has been published yet.", { status: 404 });
+  const object = await env.PHOTO_BUCKET.get(cv.storage_key);
+  if (!object) return new Response("The published CV could not be found.", { status: 404 });
+
+  return pdfResponse(object, "CV.pdf");
+}
+
+function pdfResponse(
+  object: { body: ReadableStream; httpMetadata?: { contentType?: string } },
+  filename: string,
+  extraHeaders: Record<string, string> = {}
+): Response {
+  const safeFilename = filename.replace(/[^\x20-\x7e]|["\\\r\n]/g, "_");
+  const encodedFilename = encodeURIComponent(filename).replace(/['()*]/g, (character) =>
+    `%${character.charCodeAt(0).toString(16).toUpperCase()}`
+  );
+  return new Response(object.body, {
+    headers: {
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `inline; filename="${safeFilename}"; filename*=UTF-8''${encodedFilename}`,
+      "X-Content-Type-Options": "nosniff",
+      "Cache-Control": "private, no-store",
+      ...extraHeaders,
+    },
+  });
+}
+
+function hasPdfSignature(contents: ArrayBuffer): boolean {
+  if (contents.byteLength < 5) return false;
+  const header = new Uint8Array(contents, 0, 5);
+  return header[0] === 0x25 && header[1] === 0x50 && header[2] === 0x44 && header[3] === 0x46 && header[4] === 0x2d;
+}
+
+function normalizeCvFilename(filename: string): string {
+  const cleaned = filename.trim().replaceAll("/", "_").replace(/[\\\r\n]/g, "_");
+  return cleaned.toLowerCase().endsWith(".pdf") ? cleaned : `${cleaned || "CV"}.pdf`;
 }
 
 /** Build an array of { from, to, label } for the last N months */

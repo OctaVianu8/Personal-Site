@@ -5,6 +5,7 @@ main = "worker.ts"
 [assets]
 directory = "./dist"
 binding = "ASSETS"
+run_worker_first = ["/api/*", "/CV.pdf"]
 
 [[r2_buckets]]
 binding = "PHOTO_BUCKET"
