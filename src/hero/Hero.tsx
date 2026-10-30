@@ -19,8 +19,8 @@ const DownloadIcon = ({ className }: IconProps) => (
 );
 
 const STATS = [
-  { value: "AMIQ EDA", label: "Software Engineering Intern" },
-  { value: "Discover Citadel", label: "Attendee" },
+  { value: "Jane Street", label: "SWE Intern — Summer 2027" },
+  { value: "ACS UPB", label: "Teaching Assistant" },
   { value: "CEOI", label: "Problem Setter" },
   { value: "RCPC", label: "Bronze Medalist" },
 ] as const;

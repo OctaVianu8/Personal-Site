@@ -4,9 +4,21 @@ import styles from "./Experience.module.css";
 const ENTRIES = [
   {
     role: "Software Engineering Intern",
-    org: "AMIQ Eda",
-    year: "2026 (upcoming)",
-    desc: "Incoming SWE intern at AMIQ Eda, a leading provider of EDA solutions for the semiconductor industry.",
+    org: "Jane Street",
+    year: "2027 (upcoming)",
+    desc: "Incoming SWE intern at Jane Street for Summer 2027.",
+  },
+  {
+    role: "Teaching Assistant",
+    org: "ACS UPB",
+    year: "2026 – Present",
+    desc: "Teaching Assistant for Algorithm Analysis and Object-Oriented Programming.",
+  },
+  {
+    role: "Software Engineering Intern",
+    org: "AMIQ EDA",
+    year: "2026",
+    desc: "Worked as a SWE intern at AMIQ EDA, a leading provider of EDA solutions for the semiconductor industry.",
   },
   {
     role: "Discover Program",
