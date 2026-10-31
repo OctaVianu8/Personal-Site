@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import ContentEditor from "./content/ContentEditor";
 import styles from "./AdminPage.module.css";
 
 interface Album {
@@ -22,8 +23,15 @@ interface CvFile {
   is_active: number;
 }
 
-type AdminSection = "cv" | "photos";
+type AdminSection = "cv" | "photos" | "content";
 type IconProps = { className?: string };
+
+const EditIcon = ({ className }: IconProps) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+  </svg>
+);
 
 const DocumentIcon = ({ className }: IconProps) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -373,6 +381,14 @@ export default function AdminPage() {
           <div className={styles.sidebarGroup}>
             <p className={styles.sidebarLabel}>Content</p>
             <button
+              className={`${styles.navItem} ${section === "content" ? styles.navItemActive : ""}`}
+              type="button"
+              onClick={() => setSection("content")}
+            >
+              <EditIcon className={styles.navIcon} />
+              <span>Site text</span>
+            </button>
+            <button
               className={`${styles.navItem} ${section === "cv" ? styles.navItemActive : ""}`}
               type="button"
               onClick={() => setSection("cv")}
@@ -446,7 +462,18 @@ export default function AdminPage() {
           )}
           {notice && <div className={styles.notice} role="status"><CheckIcon /> {notice}</div>}
 
-          {section === "cv" ? (
+          {section === "content" ? (
+            <section className={styles.contentSection}>
+              <div className={styles.pageHeading}>
+                <div>
+                  <p className={styles.eyebrow}>Site Management</p>
+                  <h1>Site text</h1>
+                  <p>Edit hero highlights, bio paragraphs, experience timeline, awards, and contact links directly.</p>
+                </div>
+              </div>
+              <ContentEditor onNotice={showNotice} onError={setError} />
+            </section>
+          ) : section === "cv" ? (
             <section className={styles.contentSection}>
               <div className={styles.pageHeading}>
                 <div>

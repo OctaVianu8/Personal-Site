@@ -1,4 +1,5 @@
 import { useFadeIn } from "../useFadeIn";
+import { useSiteContent } from "../content/ContentProvider";
 import styles from "./Contact.module.css";
 
 type IconProps = {
@@ -36,14 +37,17 @@ const ExternalLinkIcon = ({ className }: IconProps) => (
   </svg>
 );
 
-const LINKS = [
-  { label: "Email", href: "mailto:stanescu.matei.octavian@gmail.com", Icon: EmailIcon },
-  { label: "LinkedIn", href: "https://www.linkedin.com/in/octavianu/", Icon: LinkedInIcon },
-  { label: "GitHub", href: "https://github.com/OctaVianu8", Icon: GitHubIcon },
-] as const;
+const getLinkIcon = (label: string) => {
+  const l = (label || "").toLowerCase();
+  if (l.includes("mail")) return EmailIcon;
+  if (l.includes("linkedin")) return LinkedInIcon;
+  if (l.includes("github")) return GitHubIcon;
+  return ExternalLinkIcon;
+};
 
 export default function Contact() {
   const { ref, visible } = useFadeIn(0.15);
+  const { links, footer } = useSiteContent("contact");
 
   return (
     <section id="contact" className={styles.section}>
@@ -52,28 +56,30 @@ export default function Contact() {
         <p className={styles.subheading}>get in touch</p>
 
         <div className={styles.links}>
-          {LINKS.map(({ label, href, Icon }) => (
-            <a
-              key={label}
-              href={href}
-              target={href.startsWith("mailto") ? undefined : "_blank"}
-              rel={href.startsWith("mailto") ? undefined : "noopener noreferrer"}
-              className={styles.link}
-            >
-              <Icon className={styles.linkIcon} />
-              <span className={styles.linkLabel}>{label}</span>
-              <ExternalLinkIcon className={styles.externalIcon} />
-            </a>
-          ))}
+          {links?.map(({ label, href }, i) => {
+            const Icon = getLinkIcon(label);
+            return (
+              <a
+                key={`${label}-${i}`}
+                href={href}
+                target={href?.startsWith("mailto") ? undefined : "_blank"}
+                rel={href?.startsWith("mailto") ? undefined : "noopener noreferrer"}
+                className={styles.link}
+              >
+                <Icon className={styles.linkIcon} />
+                <span className={styles.linkLabel}>{label}</span>
+                <ExternalLinkIcon className={styles.externalIcon} />
+              </a>
+            );
+          })}
         </div>
 
         <hr className={styles.divider} />
 
         <p className={styles.footer}>
-          © 2025 Octavian Stănescu; Built with React + Vite, deployed on Cloudflare Pages
+          {footer}
         </p>
       </div>
-      
     </section>
   );
 }

@@ -1,4 +1,7 @@
+import type { ReactElement } from "react";
 import { useFadeIn } from "../useFadeIn";
+import { useSiteContent } from "../content/ContentProvider";
+import type { AwardItem } from "../content/defaults";
 import styles from "./HonorsAndAwards.module.css";
 
 type IconProps = {
@@ -47,82 +50,40 @@ function AwardIcon({ className }: IconProps) {
   );
 }
 
-const ACHIEVEMENTS = [
-  {
-    Icon: PenLineIcon,
-    event: "CEOI 2025",
-    result: "Problem Setter",
-    desc: "Central European Olympiad in Informatics",
-  },
-  {
-    Icon: MedalIcon,
-    event: "RCPC 2025",
-    result: "4th Place, Bronze Medal",
-    desc: "Romanian Collegiate Programming Contest, Bucharest",
-  },
-  {
-    Icon: TrophyIcon,
-    event: "ONI 2024",
-    result: "3rd Prize, Gold Medal",
-    desc: "National Informatics Olympiad, Bucharest",
-  },
-  {
-    Icon: MedalIcon,
-    event: "RCPC 2024",
-    result: "4th Place, Bronze Medal",
-    desc: "Romanian Collegiate Programming Contest, Bucharest",
-  },
-  {
-    Icon: AwardIcon,
-    event: "ONI 2023",
-    result: "Honorable Mention, Silver Medal",
-    desc: "National Informatics Olympiad, Bucharest",
-  },
-  {
-    Icon: AwardIcon,
-    event: "National Physics Olympiad 2023",
-    result: "National Team Qualification, Silver Medal",
-    desc: "National Physics Olympiad, Oradea",
-  },
-  {
-    Icon: AwardIcon,
-    event: "ONI 2022",
-    result: "Silver Medal",
-    desc: "National Informatics Olympiad",
-  },
-  {
-    Icon: MedalIcon,
-    event: "Mathematics",
-    result: "1 Silver, 2 Bronze Medals",
-    desc: "National Mathematics Olympiad",
-  },
-] as const;
-
-
+const ICON_MAP: Record<AwardItem["icon"], (props: IconProps) => ReactElement> = {
+  pen: PenLineIcon,
+  medal: MedalIcon,
+  trophy: TrophyIcon,
+  award: AwardIcon,
+};
 
 export default function HonorsAndAwards() {
   const { ref, visible } = useFadeIn(0.08);
-  const FeaturedIcon = ACHIEVEMENTS[0].Icon;
+  const { items } = useSiteContent("awards");
+  const validItems = items ?? [];
+  const FeaturedIcon = ICON_MAP[validItems[0]?.icon ?? "award"] ?? AwardIcon;
 
   return (
     <section id="honors-and-awards" className={styles.section}>
       <div ref={ref} className={`${styles.content}${visible ? ` ${styles.visible}` : ""}`}>
         <h2 className="sectionHeading">Honors and Awards</h2>
 
-        <div className={styles.featured}>
-          <span className={styles.featuredIcon}>
-            <FeaturedIcon className={styles.awardIcon} />
-          </span>
-          <div className={styles.featuredTop}>
-            <h3 className={styles.featuredEvent}>{ACHIEVEMENTS[0].event}</h3>
-            <span className={styles.featuredResult}>{ACHIEVEMENTS[0].result}</span>
+        {validItems.length > 0 && (
+          <div className={styles.featured}>
+            <span className={styles.featuredIcon}>
+              <FeaturedIcon className={styles.awardIcon} />
+            </span>
+            <div className={styles.featuredTop}>
+              <h3 className={styles.featuredEvent}>{validItems[0].event}</h3>
+              <span className={styles.featuredResult}>{validItems[0].result}</span>
+            </div>
+            <p className={styles.featuredDesc}>{validItems[0].desc}</p>
           </div>
-          <p className={styles.featuredDesc}>{ACHIEVEMENTS[0].desc}</p>
-        </div>
+        )}
 
         <div className={styles.scrollContainer}>
-          {ACHIEVEMENTS.slice(1).map((a, i) => {
-            const Icon = a.Icon;
+          {validItems.slice(1).map((a, i) => {
+            const Icon = ICON_MAP[a.icon ?? "award"] ?? AwardIcon;
             return (
               <div key={i} className={styles.achievementCard}>
                 <div className={styles.achievementHeader}>

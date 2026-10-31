@@ -1,41 +1,10 @@
 import { useFadeIn } from "../useFadeIn";
+import { useSiteContent } from "../content/ContentProvider";
 import styles from "./Experience.module.css";
-
-const ENTRIES = [
-  {
-    role: "Software Engineering Intern",
-    org: "Jane Street",
-    year: "2027 (upcoming)",
-    desc: "Incoming SWE intern at Jane Street for Summer 2027.",
-  },
-  {
-    role: "Teaching Assistant",
-    org: "ACS UPB",
-    year: "2026 – Present",
-    desc: "Teaching Assistant for Algorithm Analysis and Object-Oriented Programming.",
-  },
-  {
-    role: "Software Engineering Intern",
-    org: "AMIQ EDA",
-    year: "2026",
-    desc: "Worked as a SWE intern at AMIQ EDA, a leading provider of EDA solutions for the semiconductor industry.",
-  },
-  {
-    role: "Discover Program",
-    org: "Citadel",
-    year: "2026",
-    desc: "Selected for Citadel's exclusive program for top European CS students.",
-  },
-  {
-    role: "Problem Setter",
-    org: "CEOI",
-    year: "2025",
-    desc: "Designed and validated competition problems for the Central European Olympiad in Informatics.",
-  },
-] as const;
 
 export default function Experience() {
   const { ref, visible } = useFadeIn(0.12);
+  const { entries } = useSiteContent("experience");
 
   return (
     <section id="experience" className={styles.section}>
@@ -44,7 +13,7 @@ export default function Experience() {
 
         <div className={styles.timeline}>
           <div className={styles.line} />
-          {ENTRIES.map((entry, i) => (
+          {entries?.map((entry, i) => (
             <div key={i} className={styles.entry}>
               <div className={styles.dot} />
               <h3 className={styles.role}>{entry.role}</h3>

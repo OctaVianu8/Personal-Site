@@ -1,0 +1,233 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.loadingWrap {
+  padding: 3rem 0;
+  color: var(--color-faint);
+  font-size: 0.9rem;
+}
+
+.subTabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.subTabBtn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--color-muted);
+  padding: 0.45rem 0.9rem;
+  border-radius: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.subTabBtn:hover {
+  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.subTabActive {
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent-border);
+}
+
+.formCard {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--color-border);
+  border-radius: 0.85rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.formHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 1rem;
+}
+
+.formHeader h3 {
+  font-size: 1.15rem;
+  margin-bottom: 0.25rem;
+}
+
+.formHeader p {
+  color: var(--color-faint);
+  font-size: 0.8rem;
+}
+
+.saveBtn {
+  background: var(--color-accent);
+  color: #03080a;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.55rem 1.15rem;
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: opacity 150ms ease;
+  white-space: nowrap;
+}
+
+.saveBtn:hover:not(:disabled) {
+  opacity: 0.88;
+}
+
+.saveBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.itemList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.itemList h4 {
+  font-size: 0.9rem;
+  color: var(--color-text);
+  margin-top: 0.5rem;
+}
+
+.row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.row input {
+  flex: 1;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.grid3 {
+  display: grid;
+  grid-template-columns: 140px 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.blockRow {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0.6rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.blockRowHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+.featuredBadge {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  border: 1px solid var(--color-accent-border);
+  font-size: 0.7rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 0.3rem;
+  margin-left: 0.5rem;
+}
+
+.textAreaRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0.6rem;
+  padding: 0.85rem;
+}
+
+.textAreaHeader {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--color-faint);
+}
+
+.formCard input,
+.formCard textarea,
+.formCard select {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--color-border);
+  border-radius: 0.45rem;
+  color: var(--color-text);
+  padding: 0.55rem 0.75rem;
+  font-family: inherit;
+  font-size: 0.82rem;
+  outline: none;
+  transition: border-color 150ms ease;
+}
+
+.formCard input:focus,
+.formCard textarea:focus,
+.formCard select:focus {
+  border-color: var(--color-accent);
+}
+
+.formCard select option {
+  background: #0d1316;
+  color: #fff;
+}
+
+.removeBtn {
+  background: transparent;
+  border: none;
+  color: var(--color-faint);
+  font-size: 0.82rem;
+  cursor: pointer;
+  padding: 0.3rem 0.5rem;
+  border-radius: 0.3rem;
+  transition: color 150ms ease;
+}
+
+.removeBtn:hover {
+  color: #ff6b6b;
+}
+
+.addBtn {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed var(--color-border);
+  color: var(--color-muted);
+  border-radius: 0.45rem;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 150ms ease;
+  margin-top: 0.25rem;
+}
+
+.addBtn:hover {
+  color: var(--color-text);
+  border-color: var(--color-accent-border);
+  background: var(--color-accent-soft);
+}
+

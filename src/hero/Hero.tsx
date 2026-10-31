@@ -1,4 +1,5 @@
 import styles from "./Hero.module.css";
+import { useSiteContent } from "../content/ContentProvider";
 
 type IconProps = {
   className?: string;
@@ -17,13 +18,6 @@ const DownloadIcon = ({ className }: IconProps) => (
     <line x1="12" x2="12" y1="15" y2="3" />
   </svg>
 );
-
-const STATS = [
-  { value: "Jane Street", label: "SWE Intern — Summer 2027" },
-  { value: "ACS UPB", label: "Teaching Assistant" },
-  { value: "CEOI", label: "Problem Setter" },
-  { value: "RCPC", label: "Bronze Medalist" },
-] as const;
 
 function HeroTitle() {
   return (
@@ -62,10 +56,11 @@ function HeroActions() {
 }
 
 function HeroStats() {
+  const { stats } = useSiteContent("hero");
   return (
     <div className={styles.stats}>
-      {STATS.map(({ value, label }) => (
-        <div key={label}>
+      {stats?.map(({ value, label }, i) => (
+        <div key={`${label}-${i}`}>
           <p className={styles.statValue}>{value}</p>
           <p className={styles.statLabel}>{label}</p>
         </div>

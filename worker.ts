@@ -1,6 +1,6 @@
 const CORS = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, DELETE, PATCH, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
 };
 
@@ -424,6 +424,43 @@ async function handleApi(
         },
       }
     );
+  }
+
+  // GET /api/content  (all editable content blocks)
+  if (pathname === "/api/content" && method === "GET") {
+    const r = await env.DB.prepare(
+      `SELECT key, value FROM site_settings WHERE key LIKE 'content:%'`
+    ).all<{ key: string; value: string }>();
+    const content: Record<string, unknown> = {};
+    for (const row of r.results) {
+      try {
+        content[row.key.replace("content:", "")] = JSON.parse(row.value);
+      } catch {
+        /* skip malformed rows */
+      }
+    }
+    return Response.json(content, { headers: CORS });
+  }
+
+  // PUT /api/content/:key  (upsert a single content block)
+  const mContent = pathname.match(/^\/api\/content\/([a-z]+)$/);
+  if (mContent && method === "PUT") {
+    const body = await request.text();
+    try {
+      JSON.parse(body); // validate JSON
+    } catch {
+      return Response.json(
+        { error: "Request body must be valid JSON." },
+        { status: 400, headers: CORS }
+      );
+    }
+    await env.DB.prepare(
+      `INSERT INTO site_settings (key, value, updated_at)
+       VALUES (?, ?, datetime('now'))
+       ON CONFLICT(key) DO UPDATE SET value = excluded.value,
+                                       updated_at = excluded.updated_at`
+    ).bind(`content:${mContent[1]}`, body).run();
+    return Response.json({ ok: true }, { headers: CORS });
   }
 
   return Response.json({ error: "Not found" }, { status: 404, headers: CORS });
